@@ -11,8 +11,8 @@ getRow = (!!)
 getCol :: Sudoku -> Int -> [Int]
 getCol s x = [r !! x | r <- s]
 
-getBox :: Sudoku -> Int -> [[Int]]
-getBox s x =
+getBoxCoords :: Int -> [[Pos]]
+getBoxCoords x =
   let
     i = x `div` 3
     j = x `mod` 3
@@ -21,10 +21,23 @@ getBox s x =
     j1 = j * 3
     j2 = j1 + 2
   in
-    [[s !!! (row, col) | col <- [j1 .. j2]] | row <- [i1 .. i2]]
+    [[(row, col) | col <- [j1 .. j2]] | row <- [i1 .. i2]]
+
+
+getBox :: Sudoku -> Int -> [[Int]]
+getBox s x = map (map (s !!!)) $ getBoxCoords x
 
 getBoxFlat :: Sudoku -> Int -> [Int]
 getBoxFlat s  = concat . getBox s
+
+getBoxFromCoord :: Pos -> Int
+getBoxFromCoord (i, j) = (div i 3) * 3 + (div j 3)
+
+allSquares :: [[Pos]]
+allSquares = [[(i, j) | j <- [0 .. 8]] | i <- [0 .. 8]]
+
+allSquaresFlat :: [Pos]
+allSquaresFlat = [(i, j) | i <- [0 .. 8], j <- [0 .. 8]]
 
 -- printing
 showSudoku :: Sudoku -> String
@@ -54,3 +67,20 @@ parseSudoku = map (map (\x -> if x == '.' then 0 else (read [x] :: Int))) . line
 -- read a file and parse the sudoku grid
 readFromFile :: FilePath -> IO Sudoku
 readFromFile fp = readFile fp >>= return . parseSudoku
+
+
+-- misc
+
+-- set an entry of a 2x2 grid
+placeInGrid :: [[a]] -> Pos -> a -> [[a]]
+placeInGrid s (i, j) n =
+  let ith = s !! i
+  in take i s ++ [take j ith ++ [n] ++ drop (j+1) ith] ++ drop (i+1) s
+
+-- check if p1 and p2 are "similar", i.e. in the same row/box/col but NOT the same
+similar :: Pos -> Pos -> Bool
+similar (i1, j1) (i2, j2) = (i1, j1) /= (i2, j2) && (
+                                i1 == i2 ||
+                                j1 == j2 ||
+                                getBoxFromCoord (i1,j1) == getBoxFromCoord (i2,j2)
+                                )

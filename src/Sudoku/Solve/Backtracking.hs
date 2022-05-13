@@ -19,9 +19,7 @@ nextBlank s p = do
   else nextBlank s np
 
 place :: Sudoku -> Pos -> Int -> Sudoku
-place s (i, j) n =
-  let ith = s !! i
-  in take i s ++ [take j ith ++ [n] ++ drop (j+1) ith] ++ drop (i+1) s
+place = placeInGrid
 
 _backtrack :: Sudoku -> Pos -> Maybe Sudoku
 _backtrack state pos =
