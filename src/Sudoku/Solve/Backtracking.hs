@@ -18,9 +18,6 @@ nextBlank s p = do
   then Just np
   else nextBlank s np
 
-place :: Sudoku -> Pos -> Int -> Sudoku
-place = placeInGrid
-
 _backtrack :: Sudoku -> Pos -> Maybe Sudoku
 _backtrack state pos =
   if not $ isValid state

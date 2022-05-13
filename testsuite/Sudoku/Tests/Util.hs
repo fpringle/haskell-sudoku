@@ -18,10 +18,10 @@ propShowParse s =
   in
     parseSudoku showed === s
 
-propPlace :: (Show a, Eq a) => [[a]] -> Pos -> a -> Property
+propPlace :: Sudoku -> Pos -> Int -> Property
 propPlace s pos x =
   let
-    placed = placeInGrid s pos x
+    placed = place s pos x
   in
     conjoin $ map (\p -> if p == pos then (placed !!! p) === x else placed !!! p === s !!! p) allSquaresFlat
 

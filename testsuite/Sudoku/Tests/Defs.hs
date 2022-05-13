@@ -6,13 +6,14 @@ import Sudoku.Defs
 import Sudoku.Tests.TestUtils
 
 propCorrectHeight :: Sudoku -> Property
-propCorrectHeight s = length s === 9
+propCorrectHeight (Sudoku s) = length s === 9
 
 propCorrectWidths :: Sudoku -> Property
-propCorrectWidths = conjoin . map ((===) 9 . length)
+propCorrectWidths (Sudoku s) = conjoin $ map ((===) 9 . length) s
 
 propBlankIsEmpty :: Property
-propBlankIsEmpty = conjoin $ map (conjoin . map (===0)) blank
+propBlankIsEmpty = let Sudoku s = blank
+                   in conjoin $ map (conjoin . map (===0)) s
 
 testDefs :: IO ()
 testDefs =

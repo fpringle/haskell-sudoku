@@ -9,7 +9,7 @@ import Sudoku.Solve.Backtracking
 
 generateSolvedFromFirst :: Pos -> Int -> Sudoku
 generateSolvedFromFirst pos val =
-  let x  = backtrack $ placeInGrid blank pos val
+  let x  = backtrack $ place blank pos val
   in case x of Nothing  -> error ("Couldn't solve grid starting at " ++ show pos ++ " = " ++ show val)
                Just sol -> sol
 

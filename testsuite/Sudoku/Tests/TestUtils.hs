@@ -11,10 +11,10 @@ import Sudoku.Solve.Basic
 
 
 genSudoku :: Gen Sudoku
-genSudoku = vectorOf 9 $ vectorOf 9 $ elements [0..9]
+genSudoku = Sudoku <$> (vectorOf 9 $ vectorOf 9 $ elements [0..9])
 
 genSudokuWithOptions :: Gen SudokuWithOptions
-genSudokuWithOptions = vectorOf 9 $ vectorOf 9 $ sublistOf [1..9]
+genSudokuWithOptions = SudokuWithOptions <$> (vectorOf 9 $ vectorOf 9 $ makeOptions <$> sublistOf [1..9])
 
 genPos :: Gen Pos
 genPos = elements [0 .. 8] >*< elements [0 .. 8]
