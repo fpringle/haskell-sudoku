@@ -14,7 +14,7 @@ main = do
   putStrLn "Trying to solve:"
   printSudokuNice sudoku
   putStrLn ""
-  x <- backtrack sudoku
+  let x = backtrack sudoku
   case x of Nothing     -> putStrLn "No solution :("
             Just sol    -> putStrLn "Found a solution!\n" >> printSudokuNice sol
 
