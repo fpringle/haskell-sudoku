@@ -28,3 +28,5 @@ isValidBoxes = _isValidFunc getBoxFlat
 isValid :: Sudoku -> Bool
 isValid s = isRightSize s && isValidRows s && isValidCols s && isValidBoxes s
 
+isSolved :: Sudoku -> Bool
+isSolved (Sudoku s) = isValid (Sudoku s) && all (not . elem 0) s

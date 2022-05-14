@@ -40,7 +40,7 @@ instance Eq Options where
   Many xs == One x      = [x] == xs
 
 data SudokuWithOptions = SudokuWithOptions [[Options]]
-  deriving Eq
+  deriving (Show, Eq)
 
 (!!!!) :: SudokuWithOptions -> Pos -> Options
 (SudokuWithOptions s) !!!! (i, j) = s !! i !! j
