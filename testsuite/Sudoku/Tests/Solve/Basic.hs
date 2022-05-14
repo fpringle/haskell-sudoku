@@ -20,8 +20,8 @@ propGenInitialOptions s = conjoin $ map helper allSquaresFlat
 
     helper :: Pos -> Property
     helper pos
-      | s !!! pos > 0   = options !!!! pos === One (s !!! pos)
-      | otherwise       = conjoin $ map (helper2 pos) $ toList $ options !!!! pos
+      | s !!! pos > 0   = options !!! pos === One (s !!! pos)
+      | otherwise       = conjoin $ map (helper2 pos) $ toList $ options !!! pos
 
     -- check that no squares of s "similar" to pos contain val
     helper2 :: Pos -> Int -> Property

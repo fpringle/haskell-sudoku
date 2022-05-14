@@ -84,11 +84,6 @@ and the knowledge we have about the potential values of each cell
 -}
 type SudokuWithOptions = Grid Options
 
-{- | Get the options in a cell of the grid
--}
-(!!!!) :: SudokuWithOptions -> Pos -> Options
-(Grid s) !!!! (i, j) = s !! i !! j
-
 {- | Set the options in a cell of the grid
 -}
 setOptions :: SudokuWithOptions -> Pos -> [Int] -> SudokuWithOptions
@@ -145,7 +140,7 @@ eliminateOptions s = foldr helper s allSquaresFlat
     -- if the square at pos only has one option x, eliminate all occurrences
     -- of x from its row, column and box
     helper :: Pos -> SudokuWithOptions -> SudokuWithOptions
-    helper pos grid = case grid !!!! pos of
+    helper pos grid = case grid !!! pos of
         Many xs     -> grid
         One x       -> reduceOptions pos x grid
 
@@ -155,7 +150,7 @@ eliminateOptions s = foldr helper s allSquaresFlat
       where
         helper2 :: Pos -> Options
         helper2 (i2, j2) =
-          let ati2j2 = g !!!! (i2, j2)
+          let ati2j2 = g !!! (i2, j2)
           in if similar (i1, j1) (i2, j2)
              then deleteOption x ati2j2
              else ati2j2
@@ -179,10 +174,10 @@ scanRows = mapRows scanRow
     helper :: Int -> [Options] -> [Options]
     helper x opts =
       case filter (elemOptions x . (opts !!)) [0 .. 8] of
-        [i] -> (map (deleteOption x) $ take i opts) ++ ([One x]) ++ (map (deleteOption x) $ drop (i+1) opts)
+        [i] -> (take i opts) ++ ([One x]) ++ (drop (i+1) opts)
         _   -> opts
 
-{- | Scan each column to see if there is only 1 place where a value x
+{- | Scan each box to see if there is only 1 place where a value x
 could be - if there is, place it there
 -}
 scanCols :: SudokuWithOptions -> SudokuWithOptions
@@ -192,3 +187,4 @@ scanCols = transposeGrid . scanRows . transposeGrid
 -}
 scanRowsAndColsRepeatedly :: SudokuWithOptions -> SudokuWithOptions
 scanRowsAndColsRepeatedly = applyUntilStatic (scanRows . scanCols)
+

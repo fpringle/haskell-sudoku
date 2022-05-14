@@ -31,9 +31,9 @@ type Sudoku = Grid Int
 -}
 type Pos = (Int, Int)
 
-{- | get the cell value at a position in the grid.
+{- | get the cell value at a position in a grid.
 -}
-(!!!) :: Sudoku -> Pos -> Int
+(!!!) :: Grid a -> Pos -> a
 (Grid s) !!! (i, j) = s !! i !! j
 
 infixl 9 !!!

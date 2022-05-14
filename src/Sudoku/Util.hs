@@ -35,7 +35,7 @@ getBoxCoordsFlat x = let Grid xs = getBoxCoords x in concat xs
 
 {- | get a box of the grid as a Grid
 -}
-getBox :: Sudoku -> Int -> Grid Int
+getBox :: Grid a -> Int -> Grid a
 getBox s x = fmap (s !!!) $ getBoxCoords x
 
 {- | get a box of the grid as a list
