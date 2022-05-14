@@ -93,3 +93,7 @@ stepBasic s = foldr helper s allSquaresFlat
           in if similar (i1, j1) (i2, j2)
              then deleteOption x ati2j2
              else ati2j2
+
+stepBasicAll :: SudokuWithOptions -> SudokuWithOptions
+stepBasicAll opt = let next = stepBasic opt
+                   in if next == opt then next else stepBasicAll next
