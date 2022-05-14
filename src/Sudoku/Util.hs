@@ -7,12 +7,12 @@ import Sudoku.Defs
 {- | get a row of the grid
 -}
 getRow :: Sudoku -> Int -> [Int]
-getRow (Sudoku s) = (!!) s
+getRow (Grid s) = (!!) s
 
 {- | get a column of the grid
 -}
 getCol :: Sudoku -> Int -> [Int]
-getCol (Sudoku s) x = [r !! x | r <- s]
+getCol (Grid s) x = [r !! x | r <- s]
 
 {- | get the coordinates of a box (ordered right to left, top to bottom)
 -}
@@ -59,12 +59,12 @@ allSquaresFlat = [(i, j) | i <- [0 .. 8], j <- [0 .. 8]]
 {- | convert a grid to a simple string representation - blanks are represented as '.'
 -}
 showSudoku :: Sudoku -> String
-showSudoku (Sudoku s) = intercalate "\n" $ map (concat . map (\x -> if x == 0 then " " else show x)) s
+showSudoku (Grid s) = intercalate "\n" $ map (concat . map (\x -> if x == 0 then " " else show x)) s
 
 {- | convert a grid to a pretty string representation
 -}
 showSudokuNice :: Sudoku -> String
-showSudokuNice (Sudoku s) =
+showSudokuNice (Grid s) =
   let
     horz = "------+-------+------"
     _ls = map (map (\x -> if x == 0 then " " else show x)) s
@@ -87,7 +87,7 @@ printSudokuNice = putStrLn . showSudokuNice
 {- | parse a sudoku grid from a string
 -}
 parseSudoku :: String -> Sudoku
-parseSudoku = Sudoku . map (map (\x -> if x == '.' then 0 else (read [x] :: Int))) . lines
+parseSudoku = Grid . map (map (\x -> if x == '.' then 0 else (read [x] :: Int))) . lines
 
 {- | read a file and parse the sudoku grid
 -}
@@ -116,5 +116,5 @@ similar (i1, j1) (i2, j2) = (i1, j1) /= (i2, j2) && (
 {- | place a number in a sudoku grid
 -}
 place :: Sudoku -> Pos -> Int -> Sudoku
-place (Sudoku s) pos = Sudoku . placeInGrid s pos
+place (Grid s) pos = Grid . placeInGrid s pos
 

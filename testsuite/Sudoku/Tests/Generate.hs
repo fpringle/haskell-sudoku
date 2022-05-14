@@ -27,9 +27,7 @@ propGenRandomFromGenIsRepeated g = monadicIO $ do
   return $ s1 === s2
 
 instance Arbitrary StdGen where
-  arbitrary = do
-    seed <- chooseAny
-    return $ mkStdGen seed
+  arbitrary = mkStdGen <$> arbitrary
 
 testGenerate :: IO ()
 testGenerate = do

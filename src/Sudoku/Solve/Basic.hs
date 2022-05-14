@@ -70,20 +70,17 @@ instance Eq Options where
 {- | SudokuWithOptions represents a partially complete sudoku grid,
 and the knowledge we have about the potential values of each cell
 -}
-data SudokuWithOptions
-    = SudokuWithOptions
-        [[Options]] -- ^ A 2x2 grid of 'Options'
-    deriving (Show, Eq)
+type SudokuWithOptions = Grid Options
 
 {- | Get the options in a cell of the grid
 -}
 (!!!!) :: SudokuWithOptions -> Pos -> Options
-(SudokuWithOptions s) !!!! (i, j) = s !! i !! j
+(Grid s) !!!! (i, j) = s !! i !! j
 
 {- | Set the options in a cell of the grid
 -}
 setOptions :: SudokuWithOptions -> Pos -> [Int] -> SudokuWithOptions
-setOptions (SudokuWithOptions opt) pos = SudokuWithOptions . placeInGrid opt pos . makeOptions
+setOptions (Grid opt) pos = Grid . placeInGrid opt pos . makeOptions
 
 {- | Convert from 'Sudoku' to 'SudokuWithOptions',
 eliminating obviously impossible options.
@@ -92,7 +89,7 @@ genInitialOptions :: Sudoku -> SudokuWithOptions
 genInitialOptions s = foldr helper init allSquaresFlat
   where
     init :: SudokuWithOptions
-    init = SudokuWithOptions [[Many [] | j <- [0 .. 8]] | i <- [0 .. 8]]
+    init = Grid [[Many [] | j <- [0 .. 8]] | i <- [0 .. 8]]
 
     helper :: Pos -> SudokuWithOptions -> SudokuWithOptions
     helper pos cur
@@ -110,7 +107,7 @@ genInitialOptions s = foldr helper init allSquaresFlat
 only taking cells which have only 1 option
 -}
 optionsToNormal :: SudokuWithOptions -> Sudoku
-optionsToNormal (SudokuWithOptions opt) = Sudoku $ map (map helper) opt
+optionsToNormal (Grid opt) = Grid $ map (map helper) opt
   where
     helper :: Options -> Int
     helper (One x)  = x
@@ -132,7 +129,7 @@ eliminateOptions s = foldr helper s allSquaresFlat
 
     -- eliminate occurrences
     reduceOptions :: Pos -> Int -> SudokuWithOptions -> SudokuWithOptions
-    reduceOptions (i1,j1) x g = SudokuWithOptions $ map (map helper2) allSquares
+    reduceOptions (i1,j1) x g = Grid $ map (map helper2) allSquares
       where
         helper2 :: Pos -> Options
         helper2 (i2, j2) =

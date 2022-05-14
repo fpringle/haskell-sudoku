@@ -16,7 +16,7 @@ import Sudoku.Util
 {- | check that a grid has the right dimensions
 -}
 isRightSize :: Sudoku -> Bool
-isRightSize (Sudoku s) = (length s == 9) && all (\r -> length r == 9) s
+isRightSize (Grid s) = (length s == 9) && all (\r -> length r == 9) s
 
 {- | check that a list has no duplicate elements
 -}
@@ -44,4 +44,4 @@ isValid s = isRightSize s && isValidRows s && isValidCols s && isValidBoxes s
 {- | check that a grid is solved, i.e. complete and valid
 -}
 isSolved :: Sudoku -> Bool
-isSolved (Sudoku s) = isValid (Sudoku s) && all (not . elem 0) s
+isSolved (Grid s) = isValid (Grid s) && all (not . elem 0) s

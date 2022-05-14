@@ -13,7 +13,7 @@ module Sudoku.Solve
     , deleteOption
 
     -- * Sudoku grid plus current knowledge
-    , SudokuWithOptions(SudokuWithOptions)
+    , SudokuWithOptions
     -- ** Utility functions for SudokuWithOptions
     , setOptions
     , optionsToNormal
