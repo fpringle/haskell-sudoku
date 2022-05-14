@@ -40,7 +40,7 @@ getBox s x = fmap (s !!!) $ getBoxCoords x
 
 {- | get a box of the grid as a list
 -}
-getBoxFlat :: Sudoku -> Int -> [Int]
+getBoxFlat :: Grid a -> Int -> [a]
 getBoxFlat s x = map (s !!!) $ getBoxCoordsFlat x
 
 {- | get the index of the box a cell belongs to
