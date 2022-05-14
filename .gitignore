@@ -1,3 +1,7 @@
+
+testsuite/data/**/*.csv
+
+# haskell stuff
 dist
 ac717d860f12	
 dist-*
