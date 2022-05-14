@@ -18,7 +18,7 @@ propNextPos (i, j) = do
 
 propNextBlank :: Sudoku -> Pos -> Property
 propNextBlank s pos = do
-  let (Sudoku grid) = s
+  let (Grid grid) = s
   let flat = concat grid
   let (i, j) = pos
   let idx = i * 9 + j

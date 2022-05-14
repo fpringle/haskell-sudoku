@@ -39,20 +39,19 @@ instance Eq Options where
   One x   == Many xs    = [x] == xs
   Many xs == One x      = [x] == xs
 
-data SudokuWithOptions = SudokuWithOptions [[Options]]
-  deriving (Show, Eq)
+type SudokuWithOptions = Grid Options
 
 (!!!!) :: SudokuWithOptions -> Pos -> Options
-(SudokuWithOptions s) !!!! (i, j) = s !! i !! j
+(Grid s) !!!! (i, j) = s !! i !! j
 
 setOptions :: SudokuWithOptions -> Pos -> [Int] -> SudokuWithOptions
-setOptions (SudokuWithOptions opt) pos = SudokuWithOptions . placeInGrid opt pos . makeOptions
+setOptions (Grid opt) pos = Grid . placeInGrid opt pos . makeOptions
 
 genInitialOptions :: Sudoku -> SudokuWithOptions
 genInitialOptions s = foldr helper init allSquaresFlat
   where
     init :: SudokuWithOptions
-    init = SudokuWithOptions [[Many [] | j <- [0 .. 8]] | i <- [0 .. 8]]
+    init = Grid [[Many [] | j <- [0 .. 8]] | i <- [0 .. 8]]
 
     helper :: Pos -> SudokuWithOptions -> SudokuWithOptions
     helper pos cur
@@ -67,7 +66,7 @@ genInitialOptions s = foldr helper init allSquaresFlat
         box = getBoxFlat grid $ getBoxFromCoord (i, j)
 
 optionsToNormal :: SudokuWithOptions -> Sudoku
-optionsToNormal (SudokuWithOptions opt) = Sudoku $ map (map helper) opt
+optionsToNormal (Grid opt) = Grid $ map (map helper) opt
   where
     helper :: Options -> Int
     helper (One x)  = x
@@ -85,7 +84,7 @@ eliminateOptions s = foldr helper s allSquaresFlat
 
     -- eliminate occurrences
     reduceOptions :: Pos -> Int -> SudokuWithOptions -> SudokuWithOptions
-    reduceOptions (i1,j1) x g = SudokuWithOptions $ map (map helper2) allSquares
+    reduceOptions (i1,j1) x g = Grid $ map (map helper2) allSquares
       where
         helper2 :: Pos -> Options
         helper2 (i2, j2) =

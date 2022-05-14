@@ -7,7 +7,7 @@ import Sudoku.Util
 
 -- check the grid has the right dimensions
 isRightSize :: Sudoku -> Bool
-isRightSize (Sudoku s) = (length s == 9) && all (\r -> length r == 9) s
+isRightSize (Grid s) = (length s == 9) && all (\r -> length r == 9) s
 
 noDuplicates :: [Int] -> Bool
 noDuplicates [] = True
@@ -29,4 +29,4 @@ isValid :: Sudoku -> Bool
 isValid s = isRightSize s && isValidRows s && isValidCols s && isValidBoxes s
 
 isSolved :: Sudoku -> Bool
-isSolved (Sudoku s) = isValid (Sudoku s) && all (not . elem 0) s
+isSolved (Grid s) = isValid (Grid s) && all (not . elem 0) s
