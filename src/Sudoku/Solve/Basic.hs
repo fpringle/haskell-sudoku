@@ -73,8 +73,8 @@ optionsToNormal (SudokuWithOptions opt) = Sudoku $ map (map helper) opt
     helper (One x)  = x
     helper (Many _) = 0
 
-stepBasic :: SudokuWithOptions -> SudokuWithOptions
-stepBasic s = foldr helper s allSquaresFlat
+eliminateOptions :: SudokuWithOptions -> SudokuWithOptions
+eliminateOptions s = foldr helper s allSquaresFlat
   where
     -- if the square at pos only has one option x, eliminate all occurrences
     -- of x from its row, column and box
@@ -94,6 +94,7 @@ stepBasic s = foldr helper s allSquaresFlat
              then deleteOption x ati2j2
              else ati2j2
 
-stepBasicAll :: SudokuWithOptions -> SudokuWithOptions
-stepBasicAll opt = let next = stepBasic opt
-                   in if next == opt then next else stepBasicAll next
+eliminateOptionsAll :: SudokuWithOptions -> SudokuWithOptions
+eliminateOptionsAll opt =
+  let next = eliminateOptions opt
+  in if next == opt then next else eliminateOptionsAll next
