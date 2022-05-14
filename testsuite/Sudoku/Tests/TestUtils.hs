@@ -21,3 +21,12 @@ genPos = elements [0 .. 8] >*< elements [0 .. 8]
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x, y, z) = f x y z
+
+
+loadPuzzleAndSolution :: Int -> IO (Sudoku, Sudoku)
+loadPuzzleAndSolution num = do
+  let puzzlePath = (show num) ++ ".puzzle"
+  let solutionPath = (show num) ++ ".solution"
+  puzzle <- readFromFile puzzlePath
+  solution <- readFromFile solutionPath
+  return (puzzle, solution)
