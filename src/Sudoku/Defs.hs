@@ -2,9 +2,13 @@ module Sudoku.Defs where
 
 import Data.List
 
+{- | Abstract type representing a 2x2 grid.
+-}
 data Grid a = Grid [[a]]
   deriving (Show, Eq)
 
+{- | The Functor instance for Grid lets us map over a 2x2 grid in the natural way.
+-}
 instance Functor Grid where
   fmap f (Grid xs) = Grid $ fmap (fmap f) xs
 

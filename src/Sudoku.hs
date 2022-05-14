@@ -4,7 +4,8 @@
 module Sudoku
   (
     -- * Sudoku grid
-    Sudoku
+    Grid
+    , Sudoku
     -- ** Grid access functions
     , (!!!)
     , getRow
