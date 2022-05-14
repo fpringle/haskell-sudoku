@@ -1,0 +1,1 @@
+- fix "2x2" in documentation

@@ -14,9 +14,9 @@ getRow (Grid s) = (!!) s
 getCol :: Sudoku -> Int -> [Int]
 getCol (Grid s) x = [r !! x | r <- s]
 
-{- | get the coordinates of a box (ordered right to left, top to bottom)
+{- | get the coordinates of a box (ordered right to left, top to bottom) as a Grid
 -}
-getBoxCoords :: Int -> [[Pos]]
+getBoxCoords :: Int -> Grid Pos
 getBoxCoords x =
   let
     i = x `div` 3
@@ -26,18 +26,22 @@ getBoxCoords x =
     j1 = j * 3
     j2 = j1 + 2
   in
-    [[(row, col) | col <- [j1 .. j2]] | row <- [i1 .. i2]]
+    Grid [[(row, col) | col <- [j1 .. j2]] | row <- [i1 .. i2]]
 
-
-{- | get a box of the grid as a 2x2 sub-grid
+{- | get the coordinates of a box (ordered right to left, top to bottom) as a Grid
 -}
-getBox :: Sudoku -> Int -> [[Int]]
-getBox s x = map (map (s !!!)) $ getBoxCoords x
+getBoxCoordsFlat :: Int -> [Pos]
+getBoxCoordsFlat x = let Grid xs = getBoxCoords x in concat xs
 
-{- | get a row of the grid as a list
+{- | get a box of the grid as a Grid
+-}
+getBox :: Sudoku -> Int -> Grid Int
+getBox s x = fmap (s !!!) $ getBoxCoords x
+
+{- | get a box of the grid as a list
 -}
 getBoxFlat :: Sudoku -> Int -> [Int]
-getBoxFlat s  = concat . getBox s
+getBoxFlat s x = map (s !!!) $ getBoxCoordsFlat x
 
 {- | get the index of the box a cell belongs to
 -}

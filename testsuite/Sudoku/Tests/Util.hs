@@ -9,7 +9,7 @@ import Sudoku.Tests.TestUtils
 
 
 propGetBoxCoords :: Int -> Property
-propGetBoxCoords x = conjoin $ map ((===x) . getBoxFromCoord) $ concat $ getBoxCoords x
+propGetBoxCoords x = conjoin $ map ((===x) . getBoxFromCoord) $ getBoxCoordsFlat x
 
 propShowParse :: Sudoku -> Property
 propShowParse s =
