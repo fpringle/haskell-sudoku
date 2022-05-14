@@ -4,7 +4,8 @@
 name:                sudoku
 version:             0.1.0.0
 synopsis:            Sudoku solver implemented in Haskell
--- description:
+description:
+    Sudoku is a library for generating, checking and solving Sudoku puzzles
 homepage:            https://github.com/fpringle/haskell-sudoku
 license:             MIT
 license-file:        LICENSE
@@ -17,7 +18,8 @@ extra-source-files:  CHANGELOG.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Sudoku
+  exposed-modules:     Sudoku,
+                       Sudoku.Solve
   other-modules:       Sudoku.Defs,
                        Sudoku.Generate,
                        Sudoku.Util,

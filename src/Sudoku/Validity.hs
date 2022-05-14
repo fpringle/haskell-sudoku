@@ -1,14 +1,25 @@
-module Sudoku.Validity where
+module Sudoku.Validity
+  (
+    {- * Grid predicates
+    -}
+    isValid
+    {- ** solution predicates
+    -}
+    , isSolved
+  ) where
 
 import Sudoku.Defs
 import Sudoku.Util
 
 -- checks
 
--- check the grid has the right dimensions
+{- | check that a grid has the right dimensions
+-}
 isRightSize :: Sudoku -> Bool
 isRightSize (Sudoku s) = (length s == 9) && all (\r -> length r == 9) s
 
+{- | check that a list has no duplicate elements
+-}
 noDuplicates :: [Int] -> Bool
 noDuplicates [] = True
 noDuplicates (x:xs) = (x == 0 || not (elem x xs)) && noDuplicates xs
@@ -25,8 +36,12 @@ isValidCols = _isValidFunc getCol
 isValidBoxes :: Sudoku -> Bool
 isValidBoxes = _isValidFunc getBoxFlat
 
+{- | check that a grid is valid
+-}
 isValid :: Sudoku -> Bool
 isValid s = isRightSize s && isValidRows s && isValidCols s && isValidBoxes s
 
+{- | check that a grid is solved, i.e. complete and valid
+-}
 isSolved :: Sudoku -> Bool
 isSolved (Sudoku s) = isValid (Sudoku s) && all (not . elem 0) s
