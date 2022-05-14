@@ -1,5 +1,6 @@
 module Sudoku.Solve.Basic where
 
+import Data.Function
 import Data.List
 
 import Sudoku.Defs
@@ -20,11 +21,22 @@ data Options
     -}
     | Many [Int]
 
-{- | Analgous to 'map' from "Prelude"
+{- | Analgous to 'map' from "Data.List"
 -}
 mapOptions :: (Int -> Int) -> Options -> Options
 mapOptions f (One x) = One (f x)
 mapOptions f (Many xs) = Many (map f xs)
+
+{- | Analgous to 'elem' from "Data.List"
+-}
+elemOptions :: Int -> Options -> Bool
+elemOptions y (One x) = y == x
+elemOptions y (Many xs) = elem y xs
+
+{- | Count the occurrences of an Int in a list of 'Options'
+-}
+countOptions :: Int -> [Options] -> Int
+countOptions x = length . filter (elemOptions x)
 
 {- | Convert an 'Options' object to a list of integers
 -}
@@ -82,6 +94,16 @@ type SudokuWithOptions = Grid Options
 setOptions :: SudokuWithOptions -> Pos -> [Int] -> SudokuWithOptions
 setOptions (Grid opt) pos = Grid . placeInGrid opt pos . makeOptions
 
+{- | Given a function that transforms a SudokuWithOptions and a starting grid,
+repeatedly apply the function until it converges to a fixed point.
+-}
+applyUntilStatic :: (SudokuWithOptions -> SudokuWithOptions) -> SudokuWithOptions -> SudokuWithOptions
+applyUntilStatic func = fix helper
+  where
+    helper next guess =
+      let nextGuess = func guess
+      in if nextGuess == guess then guess else next nextGuess
+
 {- | Convert from 'Sudoku' to 'SudokuWithOptions',
 eliminating obviously impossible options.
 -}
@@ -107,7 +129,7 @@ genInitialOptions s = foldr helper init allSquaresFlat
 only taking cells which have only 1 option
 -}
 optionsToNormal :: SudokuWithOptions -> Sudoku
-optionsToNormal (Grid opt) = Grid $ map (map helper) opt
+optionsToNormal opt = fmap helper opt
   where
     helper :: Options -> Int
     helper (One x)  = x
@@ -129,7 +151,7 @@ eliminateOptions s = foldr helper s allSquaresFlat
 
     -- eliminate occurrences
     reduceOptions :: Pos -> Int -> SudokuWithOptions -> SudokuWithOptions
-    reduceOptions (i1,j1) x g = Grid $ map (map helper2) allSquares
+    reduceOptions (i1,j1) x g = fmap helper2 allSquares
       where
         helper2 :: Pos -> Options
         helper2 (i2, j2) =
@@ -140,7 +162,33 @@ eliminateOptions s = foldr helper s allSquaresFlat
 
 {- | Repeatedly apply 'eliminateOptions' until there are no changes.
 -}
-eliminateOptionsAll :: SudokuWithOptions -> SudokuWithOptions
-eliminateOptionsAll opt =
-  let next = eliminateOptions opt
-  in if next == opt then next else eliminateOptionsAll next
+eliminateOptionsRepeatedly :: SudokuWithOptions -> SudokuWithOptions
+eliminateOptionsRepeatedly = applyUntilStatic eliminateOptions
+
+{- | Scan each row to see if there is only 1 place where a value x
+could be - if there is, place it there
+-}
+scanRows :: SudokuWithOptions -> SudokuWithOptions
+scanRows = mapRows scanRow
+  where
+    scanRow :: [Options] -> [Options]
+    scanRow opts = foldr helper opts [1 .. 9]
+
+    -- given a value x and a row opts, see if there is only one x options in opts.
+    -- if so, set it and delete from the rest
+    helper :: Int -> [Options] -> [Options]
+    helper x opts =
+      case filter (elemOptions x . (opts !!)) [0 .. 8] of
+        [i] -> (map (deleteOption x) $ take i opts) ++ ([One x]) ++ (map (deleteOption x) $ drop (i+1) opts)
+        _   -> opts
+
+{- | Scan each column to see if there is only 1 place where a value x
+could be - if there is, place it there
+-}
+scanCols :: SudokuWithOptions -> SudokuWithOptions
+scanCols = transposeGrid . scanRows . transposeGrid
+
+{- | Repeatedly apply 'scanRows' and 'scanCols' until convergence.
+-}
+scanRowsAndColsRepeatedly :: SudokuWithOptions -> SudokuWithOptions
+scanRowsAndColsRepeatedly = applyUntilStatic (scanRows . scanCols)

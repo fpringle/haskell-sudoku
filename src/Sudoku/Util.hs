@@ -44,10 +44,10 @@ getBoxFlat s  = concat . getBox s
 getBoxFromCoord :: Pos -> Int
 getBoxFromCoord (i, j) = (div i 3) * 3 + (div j 3)
 
-{- | all cell positions as a 2x2 grid
+{- | all cell positions as a 2x2 Grid
 -}
-allSquares :: [[Pos]]
-allSquares = [[(i, j) | j <- [0 .. 8]] | i <- [0 .. 8]]
+allSquares :: Grid Pos
+allSquares = Grid [[(i, j) | j <- [0 .. 8]] | i <- [0 .. 8]]
 
 {- | all cell positions as a list
 -}

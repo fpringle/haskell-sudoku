@@ -7,6 +7,8 @@ module Sudoku.Solve
     Options(One, Many)
     -- ** Utility functions for Options
     , mapOptions
+    , elemOptions
+    , countOptions
     , toList
     , makeOptions
     , lengthOptions
@@ -17,11 +19,15 @@ module Sudoku.Solve
     -- ** Utility functions for SudokuWithOptions
     , setOptions
     , optionsToNormal
+    , applyUntilStatic
 
     -- * Basic solving techniques
     , genInitialOptions
     , eliminateOptions
-    , eliminateOptionsAll
+    , eliminateOptionsRepeatedly
+    , scanRows
+    , scanCols
+    , scanRowsAndColsRepeatedly
   ) where
 
 import Sudoku.Solve.Basic

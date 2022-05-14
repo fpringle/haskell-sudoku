@@ -7,6 +7,16 @@ import Data.List
 data Grid a = Grid [[a]]
   deriving (Show, Eq)
 
+{- | map over the rows of a 'Grid'
+-}
+mapRows :: ([a] -> [b]) -> Grid a -> Grid b
+mapRows f (Grid xs) = Grid (map f xs)
+
+{- | transpose a grid using 'transpose' from "Data.List"
+-}
+transposeGrid :: Grid a -> Grid a
+transposeGrid (Grid grid) = Grid $ transpose grid
+
 {- | The Functor instance for Grid lets us map over a 2x2 grid in the natural way.
 -}
 instance Functor Grid where
