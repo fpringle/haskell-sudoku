@@ -160,31 +160,46 @@ eliminateOptions s = foldr helper s allSquaresFlat
 eliminateOptionsRepeatedly :: SudokuWithOptions -> SudokuWithOptions
 eliminateOptionsRepeatedly = applyUntilStatic eliminateOptions
 
-{- | Scan each row to see if there is only 1 place where a value x
-could be - if there is, place it there
+{- | Given a value x and a list opts, see if there is only one x options in opts.
+If so, place x at that cell.
 -}
-scanRows :: SudokuWithOptions -> SudokuWithOptions
-scanRows = mapRows scanRow
+scanList :: [Options] -> [Options]
+scanList opts = foldr helper opts [1 .. 9]
   where
-    scanRow :: [Options] -> [Options]
-    scanRow opts = foldr helper opts [1 .. 9]
-
-    -- given a value x and a row opts, see if there is only one x options in opts.
-    -- if so, set it and delete from the rest
     helper :: Int -> [Options] -> [Options]
     helper x opts =
       case filter (elemOptions x . (opts !!)) [0 .. 8] of
         [i] -> (take i opts) ++ ([One x]) ++ (drop (i+1) opts)
         _   -> opts
 
-{- | Scan each box to see if there is only 1 place where a value x
+{- | Scan each row to see if there is only 1 place where a value x
+could be - if there is, place it there
+-}
+scanRows :: SudokuWithOptions -> SudokuWithOptions
+scanRows = mapRows scanList
+
+{- | Scan each column to see if there is only 1 place where a value x
 could be - if there is, place it there
 -}
 scanCols :: SudokuWithOptions -> SudokuWithOptions
 scanCols = transposeGrid . scanRows . transposeGrid
 
-{- | Repeatedly apply 'scanRows' and 'scanCols' until convergence.
+{- | Scan each box to see if there is only 1 place where a value x
+could be - if there is, place it there
 -}
-scanRowsAndColsRepeatedly :: SudokuWithOptions -> SudokuWithOptions
-scanRowsAndColsRepeatedly = applyUntilStatic (scanRows . scanCols)
+scanBoxes :: SudokuWithOptions -> SudokuWithOptions
+scanBoxes = gridToBoxes . mapRows scanList . gridToBoxes
+  where
+    gridToBoxes :: Grid a -> Grid a
+    gridToBoxes opts = Grid $ map (getBoxFlat opts) [0 .. 8]
+
+{- | Apply 'scanRows', 'scanCols' and 'scanBoxes'
+-}
+scan :: SudokuWithOptions -> SudokuWithOptions
+scan = scanBoxes . scanCols . scanRows
+
+{- | Repeatedly apply 'scan' until convergence.
+-}
+scanRepeatedly :: SudokuWithOptions -> SudokuWithOptions
+scanRepeatedly = applyUntilStatic scan
 

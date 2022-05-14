@@ -27,7 +27,9 @@ module Sudoku.Solve
     , eliminateOptionsRepeatedly
     , scanRows
     , scanCols
-    , scanRowsAndColsRepeatedly
+    , scanBoxes
+    , scan
+    , scanRepeatedly
   ) where
 
 import Sudoku.Solve.Basic
