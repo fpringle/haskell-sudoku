@@ -6,4 +6,6 @@ import Sudoku.Server
 
 
 main :: IO ()
-main = run 3421 server
+main = do
+  putStrLn "Running Sudoku server on localhost:3421"
+  run 3421 server

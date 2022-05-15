@@ -3,7 +3,7 @@ module Sudoku.Solve.Backtracking where
 import Sudoku.Defs
 import Sudoku.Util
 import Sudoku.Validity
-
+import Sudoku.Solve.Basic
 
 nextPos :: Pos -> Maybe Pos
 nextPos (i, j)
@@ -19,24 +19,26 @@ nextBlank s p = do
   else nextBlank s np
 
 _backtrack :: Sudoku -> Pos -> Maybe Sudoku
-_backtrack state pos =
-  if not $ isValid state
-  then Nothing
-  else go $ nextBlank state pos
+_backtrack _state pos = helper (improve _state) pos
   where
-    go :: Maybe Pos -> Maybe Sudoku
-    go Nothing      = Just state
-    go (Just next)  = go2 1
+    helper state pos =
+      if not $ isValid state
+      then Nothing
+      else go $ nextBlank state pos
       where
-        go2 :: Int -> Maybe Sudoku
-        go2 10 = Nothing
-        go2 n =
-          let
-            new_state = place state next n
-            sub = _backtrack new_state next
-          in
-            case sub of Nothing  -> go2 (n+1)
-                        Just sol -> Just sol
+        go :: Maybe Pos -> Maybe Sudoku
+        go Nothing      = Just state
+        go (Just next)  = go2 1
+          where
+            go2 :: Int -> Maybe Sudoku
+            go2 10 = Nothing
+            go2 n =
+              let
+                new_state = place state next n
+                sub = _backtrack new_state next
+              in
+                case sub of Nothing  -> go2 (n+1)
+                            Just sol -> Just sol
 
 backtrack :: Sudoku -> Maybe Sudoku
 backtrack s = _backtrack s (0, -1)

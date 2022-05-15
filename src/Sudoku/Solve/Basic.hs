@@ -203,3 +203,7 @@ scan = scanBoxes . scanCols . scanRows
 scanRepeatedly :: SudokuWithOptions -> SudokuWithOptions
 scanRepeatedly = applyUntilStatic scan
 
+{- | Improve a Sudoku grid as much as possible using the techniques above.
+-}
+improve :: Sudoku -> Sudoku
+improve = optionsToNormal . scanRepeatedly . genInitialOptions

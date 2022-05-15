@@ -29,14 +29,17 @@ library
                        Sudoku.Solve.Basic,
                        Sudoku.Server.Get,
                        Sudoku.Server.Post
-                       Sudoku.Server.Server
+                       Sudoku.Server.Server,
+                       Sudoku.Server.Util
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13,
                        bytestring,
                        random,
                        strict,
                        http-types,
-                       wai
+                       wai,
+                       aeson,
+                       text
   hs-source-dirs:      src
   default-language:    Haskell2010
 
@@ -52,7 +55,8 @@ executable sudoku
                        Sudoku.Server,
                        Sudoku.Server.Get,
                        Sudoku.Server.Post,
-                       Sudoku.Server.Server
+                       Sudoku.Server.Server,
+                       Sudoku.Server.Util
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13,
                        bytestring,
@@ -60,7 +64,9 @@ executable sudoku
                        strict,
                        http-types,
                        wai,
-                       warp
+                       warp,
+                       aeson,
+                       text
   hs-source-dirs:      src
   default-language:    Haskell2010
 
