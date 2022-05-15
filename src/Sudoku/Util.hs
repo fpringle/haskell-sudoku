@@ -1,6 +1,9 @@
 module Sudoku.Util where
 
 import Data.List
+import System.IO
+
+import qualified System.IO.Strict as Strict
 
 import Sudoku.Defs
 
@@ -98,7 +101,22 @@ parseSudoku = Grid . map (map (\x -> if x == '.' then 0 else (read [x] :: Int)))
 readFromFile :: FilePath -> IO Sudoku
 readFromFile fp = readFile fp >>= return . parseSudoku
 
+{- | Parse a line of a CSV file in the format in
+ [this kaggle dataset](https://www.kaggle.com/datasets/rohanrao/sudoku#:~:text=single%20unique%20solution.-,Content,-Each%20row%20represents)
+-}
+parseCSVLine :: String -> (Sudoku, Sudoku)
+parseCSVLine s =
+  let [puz, sol] = words $ map (\c -> if c == ',' then ' ' else c) s
+  in (parseCSVCol puz, parseCSVCol sol)
+  where
+    parseCSVCol :: String -> Sudoku
+    parseCSVCol s = fmap (\(i,j) -> read [s !! (i * 9 + j)]) allSquares
 
+{- | Parse puzzles and solutions a CSV file in the format in
+ [this kaggle dataset](https://www.kaggle.com/datasets/rohanrao/sudoku#:~:text=single%20unique%20solution.-,Content,-Each%20row%20represents)
+-}
+readFromCSV :: FilePath -> IO [(Sudoku, Sudoku)]
+readFromCSV fp = Strict.readFile fp >>= return . map parseCSVLine . tail . lines
 -- misc
 
 {- | set an entry of a 2x2 grid

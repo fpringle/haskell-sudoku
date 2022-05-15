@@ -18,6 +18,7 @@ module Sudoku
     -- *** Parsing
     , parseSudoku
     , readFromFile
+    , readFromCSV
     -- *** Printing
     , showSudoku
     , showSudokuNice
