@@ -1,21 +1,9 @@
 module Main where
 
-import System.Environment
+import Network.Wai.Handler.Warp (run)
 
-import Sudoku.Defs
-import Sudoku.Util
-import Sudoku.Solve.Backtracking
+import Sudoku.Server
+
 
 main :: IO ()
-main = do
-  args <- getArgs
-  let file = head args
-  sudoku <- readFromFile file
-  putStrLn "Trying to solve:"
-  printSudokuNice sudoku
-  putStrLn ""
-  let x = backtrack sudoku
-  case x of Nothing     -> putStrLn "No solution :("
-            Just sol    -> putStrLn "Found a solution!\n" >> printSudokuNice sol
-
-  return ()
+main = run 3421 server

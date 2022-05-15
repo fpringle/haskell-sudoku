@@ -19,15 +19,24 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Sudoku,
-                       Sudoku.Solve
+                       Sudoku.Solve,
+                       Sudoku.Server
   other-modules:       Sudoku.Defs,
                        Sudoku.Generate,
                        Sudoku.Util,
                        Sudoku.Validity,
                        Sudoku.Solve.Backtracking,
-                       Sudoku.Solve.Basic
+                       Sudoku.Solve.Basic,
+                       Sudoku.Server.Get,
+                       Sudoku.Server.Post
+                       Sudoku.Server.Server
   -- other-extensions:
-  build-depends:       base >=4.12 && <4.13, random, strict
+  build-depends:       base >=4.12 && <4.13,
+                       bytestring,
+                       random,
+                       strict,
+                       http-types,
+                       wai
   hs-source-dirs:      src
   default-language:    Haskell2010
 
@@ -38,10 +47,20 @@ executable sudoku
                        Sudoku.Generate,
                        Sudoku.Util,
                        Sudoku.Validity,
-                       Sudoku.Solve.Backtracking
-                       Sudoku.Solve.Basic
+                       Sudoku.Solve.Backtracking,
+                       Sudoku.Solve.Basic,
+                       Sudoku.Server,
+                       Sudoku.Server.Get,
+                       Sudoku.Server.Post,
+                       Sudoku.Server.Server
   -- other-extensions:
-  build-depends:       base >=4.12 && <4.13, random
+  build-depends:       base >=4.12 && <4.13,
+                       bytestring,
+                       random,
+                       strict,
+                       http-types,
+                       wai,
+                       warp
   hs-source-dirs:      src
   default-language:    Haskell2010
 
