@@ -5,6 +5,7 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Char8 as B
 import Text.Read
 
+import Data.Aeson
 import Network.HTTP.Types.Status (ok200, badRequest400, notFound404)
 import Network.Wai
 

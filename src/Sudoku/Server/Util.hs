@@ -1,9 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Sudoku.Server.Util
-  (
-    encode
-    , decode
-  ) where
+module Sudoku.Server.Util where
 
 import Data.Aeson
 
