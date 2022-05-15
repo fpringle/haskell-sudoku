@@ -26,6 +26,9 @@ module Sudoku
     , printSudokuNice
     -- ** Grid utility variables
     , blank
+    -- ** Grid generation
+    , generateSolved
+    , generateSolveable
 
     -- * Cell position
     , Pos
