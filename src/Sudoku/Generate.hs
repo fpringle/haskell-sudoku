@@ -1,5 +1,6 @@
 module Sudoku.Generate where
 
+import Data.List
 import System.Random
 
 import Sudoku.Defs
@@ -27,26 +28,28 @@ generateSolved = do
   g <- newStdGen
   generateSolvedFromGen g
 
-generateSolveableFromFirst :: (Monad m, RandomGen g) => Pos -> Int -> Int -> g -> m Sudoku
+{- | given a sudoku grid and a generator, replace the numbers
+i.e. the same solution but with different numbers (e.g all 1 -> 9, all 5 -> 2 etc)
+-}
+flipRandom :: (RandomGen g) => g -> Sudoku -> Sudoku
+flipRandom generator grid =
+  let
+    order = 0 : (take 9 $ nub $ randomRs (1, 9) generator :: [Int])
+  in
+    replaceValues (zip [0 .. 9] order) grid
+
+generateSolveableFromFirst :: (RandomGen g) => Pos -> Int -> Int -> g -> Sudoku
 generateSolveableFromFirst pos val blanks generator =
-  clearCells blanks generator $ generateSolvedFromFirst pos val
+  flipRandom generator $ clearCells blanks generator $ generateSolvedFromFirst pos val
   where
-    clearCells :: (Monad m, RandomGen g) => Int -> g -> Sudoku -> m Sudoku
-    clearCells 0 _ cur   = return cur
+    clearCells :: (RandomGen g) => Int -> g -> Sudoku -> Sudoku
     clearCells n gen cur =
       let
         notBlank = filter (\pos -> cur !!! pos /= 0) allSquaresFlat
+        numToDelete = min n $ length notBlank
+        toDelete = take numToDelete $ nub $ randomRs (0, length notBlank - 1) gen :: [Int]
       in
-        if notBlank == []
-        then return cur
-        else do
-            next <- clearCell notBlank gen cur
-            clearCells (n-1) gen $ next
-
-    clearCell :: (Monad m, RandomGen g) => [Pos] -> g -> Sudoku -> m Sudoku
-    clearCell notBlank gen cur = do
-      let i = head $ randomRs (0, length notBlank - 1) gen :: Int
-      return $ place cur (notBlank !! i) 0
+        foldr (\i b -> place b (notBlank !! i) 0) cur toDelete
 
 {- | Generate a solveable Sudoku grid with a given number of empty spaces
 -}
@@ -54,4 +57,4 @@ generateSolveable :: Int -> IO Sudoku
 generateSolveable blanks = do
   gen <- newStdGen
   let [i,j,y] = take 3 $ randomRs (0, 8) gen :: [Int]
-  generateSolveableFromFirst (i, j) (y + 1) blanks gen
+  return $ generateSolveableFromFirst (i, j) (y + 1) blanks gen

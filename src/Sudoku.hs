@@ -14,6 +14,7 @@ module Sudoku
     , getBoxFlat
     , place
     -- ** Grid utility functions
+    , replaceValues
     -- *** Parsing
     , parseSudoku
     , readFromFile
@@ -28,6 +29,7 @@ module Sudoku
     -- ** Grid generation
     , generateSolved
     , generateSolveable
+    , flipRandom
 
     -- * Cell position
     , Pos

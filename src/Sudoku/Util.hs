@@ -134,3 +134,15 @@ similar (i1, j1) (i2, j2) = (i1, j1) /= (i2, j2) && (
                                 j1 == j2 ||
                                 getBoxFromCoord (i1,j1) == getBoxFromCoord (i2,j2)
                                 )
+
+{- | given a grid and a list representing a map, replace all values of the grid
+according to the map
+-}
+replaceValues :: (Show a, Eq a) => [(a, a)] -> Grid a -> Grid a
+replaceValues replacements = fmap helper
+  where
+    -- helper :: a -> a
+    helper x =
+      case lookup x replacements of
+        Nothing -> error ("bad lookup: " ++ (show x) ++ " (replacements: " ++ (show replacements) ++ ")")
+        Just y -> y
