@@ -46,30 +46,29 @@ Returns Nothing if there is no solution.
 backtrack :: Sudoku -> Maybe Sudoku
 backtrack s = _backtrack s (0, -1)
 
-_backtrackList :: Sudoku -> Pos -> [Sudoku] -> (Maybe Sudoku, [Sudoku])
-_backtrackList _state pos current = helper (improve _state) pos
+_backtrackList :: Sudoku -> Pos -> [Sudoku]
+_backtrackList _state pos = helper (improve _state) pos
   where
     helper state pos =
       if not $ isValid state
-      then (Nothing, current)
+      then []
       else go $ nextBlank state pos
       where
-        go :: Maybe Pos -> (Maybe Sudoku, [Sudoku])
-        go Nothing      = (Just state, current)
-        go (Just next)  = go2 1 current
+        go :: Maybe Pos -> [Sudoku]
+        go Nothing      = [state]
+        go (Just next)  = go2 1
           where
-            go2 :: Int -> [Sudoku] -> (Maybe Sudoku, [Sudoku])
-            go2 10 cur = (Nothing, cur)
-            go2 n cur =
+            go2 :: Int -> [Sudoku]
+            go2 10 = []
+            go2 n =
               let
                 new_state = place state next n
-                (sub, new_current) = _backtrackList new_state next cur
+                sub = _backtrackList new_state next
               in
-                case sub of Nothing  -> go2 (n+1) cur
-                            Just sol -> go2 (n+1) (cur ++ [sol])
+                sub ++ (go2 (n+1))
 
 {- | Use backtracking to try to find all solutions of a suokdu grid.
 Returns Nothing if there is no solution.
 -}
 backtrackList :: Sudoku -> [Sudoku]
-backtrackList s = snd $ _backtrackList s (0, -1) []
+backtrackList s = _backtrackList s (0, -1)
