@@ -30,6 +30,10 @@ module Sudoku.Solve
     , scanBoxes
     , scan
     , scanRepeatedly
+
+    -- * More advanced solving techniques
+    , backtrack
+    , backtrackList
   ) where
 
 import Sudoku.Solve.Basic
