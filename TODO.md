@@ -1,1 +1,0 @@
-- variant of backtrack which returns all solutions, not just 1
