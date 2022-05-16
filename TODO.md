@@ -1,2 +1,1 @@
-- fix "2x2" in documentation
 - variant of backtrack which returns all solutions, not just 1

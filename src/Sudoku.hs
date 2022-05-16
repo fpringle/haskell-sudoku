@@ -12,7 +12,6 @@ module Sudoku
     , getCol
     , getBox
     , getBoxFlat
-    , placeInGrid
     , place
     -- ** Grid utility functions
     -- *** Parsing

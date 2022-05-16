@@ -87,7 +87,7 @@ type SudokuWithOptions = Grid Options
 {- | Set the options in a cell of the grid
 -}
 setOptions :: SudokuWithOptions -> Pos -> [Int] -> SudokuWithOptions
-setOptions (Grid opt) pos = Grid . placeInGrid opt pos . makeOptions
+setOptions opts pos = place opts pos . makeOptions
 
 {- | Given a function that transforms a SudokuWithOptions and a starting grid,
 repeatedly apply the function until it converges to a fixed point.

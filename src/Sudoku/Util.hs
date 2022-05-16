@@ -51,7 +51,7 @@ getBoxFlat s x = map (s !!!) $ getBoxCoordsFlat x
 getBoxFromCoord :: Pos -> Int
 getBoxFromCoord (i, j) = (div i 3) * 3 + (div j 3)
 
-{- | all cell positions as a 2x2 Grid
+{- | all cell positions as a 2D Grid
 -}
 allSquares :: Grid Pos
 allSquares = Grid [[(i, j) | j <- [0 .. 8]] | i <- [0 .. 8]]
@@ -119,12 +119,12 @@ readFromCSV :: FilePath -> IO [(Sudoku, Sudoku)]
 readFromCSV fp = Strict.readFile fp >>= return . map parseCSVLine . tail . lines
 -- misc
 
-{- | set an entry of a 2x2 grid
+{- | set an entry of a 2D grid
 -}
-placeInGrid :: [[a]] -> Pos -> a -> [[a]]
-placeInGrid s (i, j) n =
+place :: Grid a -> Pos -> a -> Grid a
+place (Grid s) (i, j) n =
   let ith = s !! i
-  in take i s ++ [take j ith ++ [n] ++ drop (j+1) ith] ++ drop (i+1) s
+  in Grid (take i s ++ [take j ith ++ [n] ++ drop (j+1) ith] ++ drop (i+1) s)
 
 {- | check if two positions are "similar", i.e. in the same row/box/col but NOT the same
 -}
@@ -134,9 +134,3 @@ similar (i1, j1) (i2, j2) = (i1, j1) /= (i2, j2) && (
                                 j1 == j2 ||
                                 getBoxFromCoord (i1,j1) == getBoxFromCoord (i2,j2)
                                 )
-
-{- | place a number in a sudoku grid
--}
-place :: Sudoku -> Pos -> Int -> Sudoku
-place (Grid s) pos = Grid . placeInGrid s pos
-
