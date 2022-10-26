@@ -12,10 +12,8 @@ LICENSE file in the root directory of this source tree.
 module Sudoku.Solve
   (
     -- * Possible entries of a cell
-    Options(One, Many)
+    Options (..)
     -- ** Utility functions for Options
-    , mapOptions
-    , elemOptions
     , countOptions
     , toList
     , makeOptions
@@ -24,20 +22,14 @@ module Sudoku.Solve
 
     -- * Sudoku grid plus current knowledge
     , SudokuWithOptions
+    --
     -- ** Utility functions for SudokuWithOptions
     , setOptions
     , optionsToNormal
     , applyUntilStatic
 
     -- * Basic solving techniques
-    , genInitialOptions
-    , eliminateOptions
-    , eliminateOptionsRepeatedly
-    , scanRows
-    , scanCols
-    , scanBoxes
-    , scan
-    , scanRepeatedly
+    , improve
 
     -- * More advanced solving techniques
     , backtrack

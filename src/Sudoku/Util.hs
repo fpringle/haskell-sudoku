@@ -6,7 +6,25 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree.
 -}
 
-module Sudoku.Util where
+{- | A collection of utility functions for working
+  with Sudoku grids.
+-}
+
+module Sudoku.Util (
+  {- * Printing Sudoku grids
+  -}
+  showSudoku
+  , showSudokuNice
+  , printSudoku
+  , printSudokuNice
+
+  {- * Parsing Sudoku grids
+  -}
+  , parseSudoku
+  , readFromFile
+  -- , parseCSVLine
+  , readFromCSV
+  ) where
 
 import Data.List
 import System.IO
@@ -14,62 +32,6 @@ import System.IO
 import qualified System.IO.Strict as Strict
 
 import Sudoku.Types
-
-{- | get a row of the grid
--}
-getRow :: Sudoku -> Int -> [Int]
-getRow (Grid s) = (!!) s
-
-{- | get a column of the grid
--}
-getCol :: Sudoku -> Int -> [Int]
-getCol (Grid s) x = [r !! x | r <- s]
-
-{- | get the coordinates of a box (ordered right to left, top to bottom) as a Grid
--}
-getBoxCoords :: Int -> Grid Pos
-getBoxCoords x =
-  let
-    i = x `div` 3
-    j = x `mod` 3
-    i1 = i * 3
-    i2 = i1 + 2
-    j1 = j * 3
-    j2 = j1 + 2
-  in
-    Grid [[(row, col) | col <- [j1 .. j2]] | row <- [i1 .. i2]]
-
-{- | get the coordinates of a box (ordered right to left, top to bottom) as a Grid
--}
-getBoxCoordsFlat :: Int -> [Pos]
-getBoxCoordsFlat x = let Grid xs = getBoxCoords x in concat xs
-
-{- | get a box of the grid as a Grid
--}
-getBox :: Grid a -> Int -> Grid a
-getBox s x = fmap (s !!!) $ getBoxCoords x
-
-{- | get a box of the grid as a list
--}
-getBoxFlat :: Grid a -> Int -> [a]
-getBoxFlat s x = map (s !!!) $ getBoxCoordsFlat x
-
-{- | get the index of the box a cell belongs to
--}
-getBoxFromCoord :: Pos -> Int
-getBoxFromCoord (i, j) = (div i 3) * 3 + (div j 3)
-
-{- | all cell positions as a 2D Grid
--}
-allSquares :: Grid Pos
-allSquares = Grid [[(i, j) | j <- [0 .. 8]] | i <- [0 .. 8]]
-
-{- | all cell positions as a list
--}
-allSquaresFlat :: [Pos]
-allSquaresFlat = [(i, j) | i <- [0 .. 8], j <- [0 .. 8]]
-
--- printing
 
 {- | convert a grid to a simple string representation - blanks are represented as '.'
 -}
@@ -97,8 +59,6 @@ printSudoku = putStrLn . showSudoku
 printSudokuNice :: Sudoku -> IO ()
 printSudokuNice = putStrLn . showSudokuNice
 
--- parsing
-
 {- | parse a sudoku grid from a string
 -}
 parseSudoku :: String -> Sudoku
@@ -125,32 +85,3 @@ parseCSVLine s =
 -}
 readFromCSV :: FilePath -> IO [(Sudoku, Sudoku)]
 readFromCSV fp = Strict.readFile fp >>= return . map parseCSVLine . tail . lines
--- misc
-
-{- | set an entry of a 2D grid
--}
-place :: Grid a -> Pos -> a -> Grid a
-place (Grid s) (i, j) n =
-  let ith = s !! i
-  in Grid (take i s ++ [take j ith ++ [n] ++ drop (j+1) ith] ++ drop (i+1) s)
-
-{- | check if two positions are "similar", i.e. in the same row/box/col but NOT the same
--}
-similar :: Pos -> Pos -> Bool
-similar (i1, j1) (i2, j2) = (i1, j1) /= (i2, j2) && (
-                                i1 == i2 ||
-                                j1 == j2 ||
-                                getBoxFromCoord (i1,j1) == getBoxFromCoord (i2,j2)
-                                )
-
-{- | given a grid and a list representing a map, replace all values of the grid
-according to the map
--}
-replaceValues :: (Show a, Eq a) => [(a, a)] -> Grid a -> Grid a
-replaceValues replacements = fmap helper
-  where
-    -- helper :: a -> a
-    helper x =
-      case lookup x replacements of
-        Nothing -> error ("bad lookup: " ++ (show x) ++ " (replacements: " ++ (show replacements) ++ ")")
-        Just y -> y

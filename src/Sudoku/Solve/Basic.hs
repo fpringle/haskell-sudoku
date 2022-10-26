@@ -6,7 +6,41 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree.
 -}
 
-module Sudoku.Solve.Basic where
+{-# LANGUAGE DeriveFunctor #-}
+
+{- | Basic techniques for solving Sudoku puzzles.
+-}
+
+module Sudoku.Solve.Basic (
+  -- * Possible entries of a cell
+  OneOrMany (..)
+  , Options (..)
+  -- ** Utility functions for Options
+  , countOptions
+  , toList
+  , makeOptions
+  , lengthOptions
+  , deleteOption
+
+  -- * Sudoku grid plus current knowledge
+  , SudokuWithOptions
+  -- ** Utility functions for SudokuWithOptions
+  , setOptions
+  , optionsToNormal
+  , applyUntilStatic
+
+  -- * Basic solving techniques
+  , genInitialOptions
+  , eliminateOptions
+  , eliminateOptionsRepeatedly
+  , scanRows
+  , scanCols
+  , scanBoxes
+  , scan
+  , scanRepeatedly
+  , improve
+
+  ) where
 
 import Data.Function
 import Data.List
@@ -15,36 +49,24 @@ import Sudoku.Types
 import Sudoku.Util
 import Sudoku.Validity
 
+{- | A list-like datatype that can contain either one or many elements
+-}
+data OneOrMany a = One a | Many [a]
+  deriving Functor
+
 {- | Options represents our current knowledge about the potential values of
 a particular cell in a grid.
 -}
-data Options
-    {- |
-      One x means we know that the cell contains an x
-    -}
-    = One
-        Int
-    {- |
-      Many xs means the cell could contain any element of xs
-    -}
-    | Many [Int]
+type Options = OneOrMany Int
 
-{- | Analgous to 'map' from "Data.List"
--}
-mapOptions :: (Int -> Int) -> Options -> Options
-mapOptions f (One x) = One (f x)
-mapOptions f (Many xs) = Many (map f xs)
-
-{- | Analgous to 'elem' from "Data.List"
--}
-elemOptions :: Int -> Options -> Bool
-elemOptions y (One x) = y == x
-elemOptions y (Many xs) = elem y xs
+instance Foldable OneOrMany where
+  foldMap f (One x) = f x
+  foldMap f (Many xs) = foldMap f xs
 
 {- | Count the occurrences of an Int in a list of 'Options'
 -}
 countOptions :: Int -> [Options] -> Int
-countOptions x = length . filter (elemOptions x)
+countOptions x = length . filter (elem x)
 
 {- | Convert an 'Options' object to a list of integers
 -}
@@ -70,18 +92,14 @@ deleteOption :: Int -> Options -> Options
 deleteOption val (One x) = if val == x then Many [] else One x
 deleteOption val (Many xs) = makeOptions $ delete val xs
 
-{- instance 'Show' 'Options' inherits from [[Int]]
--}
-instance Show Options where
+instance Show a => Show (OneOrMany a) where
   show (One x)   = show x
   show (Many xs) = show xs
 
-{- | Manual implementation of 'Eq' 'Options'.
-
-Two 'Options' objects are considered equal if they have the same elements,
+{- | Two 'OneOrMany' objects are considered equal if they have the same elements,
 regardless of constructor or order of elements.
 -}
-instance Eq Options where
+instance Ord a => Eq (OneOrMany a) where
   One x   == One y      = x == y
   Many xs == Many ys    = sort xs == sort ys
   One x   == Many xs    = [x] == xs
@@ -176,7 +194,7 @@ scanList opts = foldr helper opts [1 .. 9]
   where
     helper :: Int -> [Options] -> [Options]
     helper x opts =
-      case filter (elemOptions x . (opts !!)) [0 .. 8] of
+      case filter (elem x . (opts !!)) [0 .. 8] of
         [i] -> (take i opts) ++ ([One x]) ++ (drop (i+1) opts)
         _   -> opts
 
@@ -211,7 +229,7 @@ scan = scanBoxes . scanCols . scanRows
 scanRepeatedly :: SudokuWithOptions -> SudokuWithOptions
 scanRepeatedly = applyUntilStatic scan
 
-{- | Improve a Sudoku grid as much as possible using the techniques above.
+{- | Improve a Sudoku grid as much as possible using the techniques defined in m'Sudoku.Solve.Basic'.
 -}
 improve :: Sudoku -> Sudoku
 improve = optionsToNormal . scanRepeatedly . genInitialOptions
