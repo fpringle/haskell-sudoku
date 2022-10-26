@@ -22,3 +22,37 @@ For documentation, see [here](https://fpringle.github.io/haskell-sudoku/).
     npm install
     npm start
     ```
+## Server API
+
+The server runs on localhost at port 3421 (to change this, edit src/Main.hs). There are 2 API paths:
+
+### /board
+Get - generate a sudoku puzzle.
+
+Query parameters:
+
+- blanks(integer): the number of blank spaces desired. Use this parameter to control the difficulty of the board.
+    
+Returns:
+```
+{
+    board: [[...]]      # a 9x9 array containing an unsolved Sudoku grid
+}
+```
+
+### /solve
+Post - solve a sudoku puzzle.
+
+Request body:
+```
+{
+    board: [[...]]      # a 9x9 array containing an unsolved Sudoku grid
+}
+```
+    
+Returns:
+```
+{
+    board: [[...]]      # a 9x9 array containing the solved sudoku grid
+}
+```
