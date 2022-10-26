@@ -14,7 +14,7 @@ import Test.QuickCheck
 import Test.QuickCheck.Monadic
 import Test.QuickCheck.Instances.Tuple
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Generate
 import Sudoku.Validity
 import Sudoku.Tests.TestUtils

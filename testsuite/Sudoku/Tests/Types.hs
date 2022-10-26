@@ -6,11 +6,11 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree.
 -}
 
-module Sudoku.Tests.Defs where
+module Sudoku.Tests.Types where
 
 import Test.QuickCheck
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Tests.TestUtils
 
 propCorrectHeight :: Sudoku -> Property

@@ -11,7 +11,13 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Server
   (
-  server
+  module Sudoku.Server.Server
+  , module Sudoku.Server.Get
+  , module Sudoku.Server.Post
+  , module Sudoku.Server.Util
   ) where
 
 import Sudoku.Server.Server
+import Sudoku.Server.Get
+import Sudoku.Server.Post
+import Sudoku.Server.Util

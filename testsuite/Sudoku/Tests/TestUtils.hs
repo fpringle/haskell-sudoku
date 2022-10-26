@@ -11,7 +11,7 @@ module Sudoku.Tests.TestUtils where
 import Test.QuickCheck
 import Test.QuickCheck.Instances.Tuple
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Util
 import Sudoku.Validity
 import Sudoku.Solve.Basic

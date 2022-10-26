@@ -10,7 +10,7 @@ module Main where
 
 import Test.QuickCheck
 
-import Sudoku.Tests.Defs
+import Sudoku.Tests.Types
 import Sudoku.Tests.Generate
 import Sudoku.Tests.Util
 import Sudoku.Tests.Solve.Backtracking

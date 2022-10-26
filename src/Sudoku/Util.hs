@@ -13,7 +13,7 @@ import System.IO
 
 import qualified System.IO.Strict as Strict
 
-import Sudoku.Defs
+import Sudoku.Types
 
 {- | get a row of the grid
 -}

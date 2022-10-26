@@ -11,7 +11,7 @@ module Sudoku.Generate where
 import Data.List
 import System.Random
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Util
 import Sudoku.Solve.Backtracking
 

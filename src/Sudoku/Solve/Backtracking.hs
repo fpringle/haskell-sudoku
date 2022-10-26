@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Solve.Backtracking where
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Util
 import Sudoku.Validity
 import Sudoku.Solve.Basic

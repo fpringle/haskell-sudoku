@@ -16,7 +16,7 @@ module Sudoku.Validity
     , isSolved
   ) where
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Util
 
 -- checks

@@ -11,7 +11,7 @@ module Sudoku.Solve.Basic where
 import Data.Function
 import Data.List
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Util
 import Sudoku.Validity
 

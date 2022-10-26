@@ -17,7 +17,7 @@ import Data.Aeson
 import Network.HTTP.Types.Status (ok200, badRequest400, notFound404)
 import Network.Wai
 
-import Sudoku.Defs
+import Sudoku.Types
 import Sudoku.Solve.Backtracking
 import Sudoku.Server.Util
 import Sudoku.Generate
@@ -38,9 +38,6 @@ handleBoard request respond = do
           grid <- generateSolveable blanks
           let serialized = encode grid
           respond (responseLBS ok200 [] serialized)
-
-handleBadPath :: B.ByteString -> (Response -> IO ResponseReceived) -> IO ResponseReceived
-handleBadPath path respond = respond $ responseLBS notFound404 [] $ BL.fromStrict ("Invalid request path: " <> path)
 
 handleGet :: Application
 handleGet request respond = do

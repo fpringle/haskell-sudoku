@@ -10,8 +10,12 @@ LICENSE file in the root directory of this source tree.
 module Sudoku.Server.Util where
 
 import Data.Aeson
+import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString.Char8 as B
+import Network.Wai
+import Network.HTTP.Types.Status (notFound404)
 
-import Sudoku.Defs
+import Sudoku.Types
 
 
 instance ToJSON a => ToJSON (Grid a) where
@@ -19,3 +23,6 @@ instance ToJSON a => ToJSON (Grid a) where
 
 instance FromJSON a => FromJSON (Grid a) where
   parseJSON (Object v) = Grid <$> v .: "board"
+
+handleBadPath :: B.ByteString -> (Response -> IO ResponseReceived) -> IO ResponseReceived
+handleBadPath path respond = respond $ responseLBS notFound404 [] $ BL.fromStrict ("Invalid request path: " <> path)
