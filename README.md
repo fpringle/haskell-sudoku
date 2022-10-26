@@ -1,6 +1,6 @@
 # Haskell-Sudoku
 
-Sudoku solver implemented in Haskell
+A Sudoku library and server-based solver, implemented in Haskell.
 
 For documentation, see [here](https://fpringle.github.io/haskell-sudoku/).
 
