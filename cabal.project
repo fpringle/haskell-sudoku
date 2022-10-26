@@ -1,8 +1,0 @@
-packages: sudoku.cabal
-tests: True
-coverage: True
-library-coverage: True
--- documentation: True
-
-package sudoku
-  documentation: True
