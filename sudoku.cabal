@@ -36,7 +36,6 @@ library
                        , Sudoku.Solve.Basic
                        , Sudoku.Server.Get
                        , Sudoku.Server.Post
-                       , Sudoku.Server.Server
                        , Sudoku.Server.Util
   other-modules:    
   -- other-extensions:
@@ -51,7 +50,6 @@ executable sudoku
                        , Sudoku.Server
                        , Sudoku.Server.Get
                        , Sudoku.Server.Post
-                       , Sudoku.Server.Server
                        , Sudoku.Server.Util
                        , Sudoku.Solve.Backtracking
                        , Sudoku.Solve.Basic

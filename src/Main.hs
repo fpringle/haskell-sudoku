@@ -10,7 +10,7 @@ module Main where
 
 import Network.Wai.Handler.Warp (run)
 
-import Sudoku.Server
+import Sudoku.Server (server)
 
 
 main :: IO ()
