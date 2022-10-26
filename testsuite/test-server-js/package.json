@@ -1,7 +1,8 @@
 {
   "name": "test-sudoku-js",
   "version": "1.0.0",
-  "description": "",
+  "description": "A runner to test my sudoku solver against an internet-based solver at sugoku2.herokuapp.com",
+  "repository": "https://github.com/fpringle/haskell-sudoku",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -11,6 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-fetch": "^3.2.4"
+    "node-fetch": "^2.6.7"
   }
 }
