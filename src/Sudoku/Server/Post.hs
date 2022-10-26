@@ -7,6 +7,10 @@ LICENSE file in the root directory of this source tree.
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
+
+{- | Handle POST requests when running the Sudoku solver.
+-}
+
 module Sudoku.Server.Post where
 
 import qualified Data.ByteString.Lazy as BL
@@ -21,18 +25,22 @@ import Sudoku.Solve.Backtracking
 import Sudoku.Server.Util
 
 
+{- | Handle an HTTP POST reqest on the /solve API path.
+-}
 handleSolve :: Application
 handleSolve request respond = do
   body <- strictRequestBody request
   let decoded = decode body :: Maybe Sudoku
   case decoded of
-    Nothing     -> respond (responseLBS badRequest400 [] ("Invalid grid format"))
+    Nothing     -> respond (responseLBS badRequest400 [] "Invalid grid format")
     Just grid   -> case backtrack grid of
-        Nothing     -> respond (responseLBS ok200 [] ("Couldn't solve grid :("))
+        Nothing     -> respond (responseLBS ok200 [] "Couldn't solve grid :(")
         Just solved -> do
             let serialized = encode solved
             respond (responseLBS ok200 [] serialized)
 
+{- | Handle an HTTP POST reqest.
+-}
 handlePost :: Application
 handlePost request respond = do
   let path = pathInfo request

@@ -31,6 +31,7 @@ instance ToJSON a => ToJSON (Grid a) where
 
 instance FromJSON a => FromJSON (Grid a) where
   parseJSON (Object v) = Grid <$> v .: "board"
+  parseJSON other = error ("invalid grid JSON: " ++ show other)
 
 {- | Handle an invalid path
 -}

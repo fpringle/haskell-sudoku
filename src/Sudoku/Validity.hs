@@ -36,7 +36,7 @@ isRightSize (Grid s) = (length s == 9) && all (\r -> length r == 9) s
 -}
 noDuplicates :: [Int] -> Bool
 noDuplicates [] = True
-noDuplicates (x:xs) = (x == 0 || not (elem x xs)) && noDuplicates xs
+noDuplicates (x:xs) = (x == 0 || notElem x xs) && noDuplicates xs
 
 isValidFunc :: (Sudoku -> Int -> [Int]) -> Sudoku -> Bool
 isValidFunc f s = all (noDuplicates . f s) [0 .. 8]
@@ -64,4 +64,4 @@ isValid s = isRightSize s && isValidRows s && isValidCols s && isValidBoxes s
 {- | check that a grid is solved, i.e. complete and valid
 -}
 isSolved :: Sudoku -> Bool
-isSolved (Grid s) = isValid (Grid s) && all (not . elem 0) s
+isSolved (Grid s) = isValid (Grid s) && all (notElem 0) s

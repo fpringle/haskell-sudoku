@@ -12,9 +12,12 @@ LICENSE file in the root directory of this source tree.
 module Sudoku.Generate (
   generateSolved
   , generateSolveable
+  , generateSolvedFromFirst
+  , generateSolvedFromGen
   ) where
 
 import Data.List
+import Data.Maybe (fromMaybe)
 import System.Random
 
 import Sudoku.Types
@@ -22,13 +25,15 @@ import Sudoku.Util
 import Sudoku.Solve.Backtracking
 
 
+{- | Given a Sudoku grid with only one number, generate a solved grid.
+-}
 generateSolvedFromFirst :: Pos -> Int -> Sudoku
-generateSolvedFromFirst pos val =
-  let x  = backtrack $ place blank pos val
-  in case x of Nothing  -> error ("Couldn't solve grid starting at " ++ show pos ++ " = " ++ show val)
-               Just sol -> sol
+generateSolvedFromFirst pos val = fromMaybe errMsg maybeSol
+  where errMsg = error ("Couldn't solve grid starting at " ++ show pos ++ " = " ++ show val)
+        maybeSol = backtrack $ place blank pos val
 
-
+{- | Generate a solved grid using a 'RandomGen'.
+-}
 generateSolvedFromGen :: (Monad m, RandomGen g) => g -> m Sudoku
 generateSolvedFromGen gen =
   do

@@ -35,10 +35,9 @@ propGenInitialOptions s = conjoin $ map helper allSquaresFlat
     helper2 :: Pos -> Int -> Property
     helper2 (i,j) val = checkRow .&&. checkCol .&&. checkBox
       where
-        checkRow = not $ elem val $ getRow s i
-        checkCol = not $ elem val $ getCol s j
-        checkBox = not $ elem val $ getBoxFlat s $ getBoxFromCoord (i, j)
+        checkRow = notElem val $ getRow s i
+        checkCol = notElem val $ getCol s j
+        checkBox = notElem val $ getBoxFlat s $ getBoxFromCoord (i, j)
 
 testBasic :: IO ()
-testBasic = do
-  quickCheck $ forAll genSudoku propGenInitialOptions
+testBasic = quickCheck $ forAll genSudoku propGenInitialOptions

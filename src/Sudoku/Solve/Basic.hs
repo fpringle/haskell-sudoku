@@ -150,7 +150,7 @@ genInitialOptions s = foldr helper init allSquaresFlat
 only taking cells which have only 1 option
 -}
 optionsToNormal :: SudokuWithOptions -> Sudoku
-optionsToNormal opt = fmap helper opt
+optionsToNormal = fmap helper
   where
     helper :: Options -> Int
     helper (One x)  = x
@@ -195,7 +195,7 @@ scanList opts = foldr helper opts [1 .. 9]
     helper :: Int -> [Options] -> [Options]
     helper x opts =
       case filter (elem x . (opts !!)) [0 .. 8] of
-        [i] -> (take i opts) ++ ([One x]) ++ (drop (i+1) opts)
+        [i] -> take i opts ++ [One x] ++ drop (i+1) opts
         _   -> opts
 
 {- | Scan each row to see if there is only 1 place where a value x

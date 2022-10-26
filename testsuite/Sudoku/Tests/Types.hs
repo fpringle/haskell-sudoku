@@ -24,8 +24,7 @@ propBlankIsEmpty = let Grid s = blank
                    in conjoin $ map (conjoin . map (===0)) s
 
 testDefs :: IO ()
-testDefs =
-  do
-    quickCheck $ forAll genSudoku propCorrectHeight
-    quickCheck $ forAll genSudoku propCorrectWidths
-    quickCheck $ once propBlankIsEmpty
+testDefs = do
+  quickCheck $ forAll genSudoku propCorrectHeight
+  quickCheck $ forAll genSudoku propCorrectWidths
+  quickCheck $ once propBlankIsEmpty

@@ -40,5 +40,5 @@ instance Arbitrary StdGen where
 testGenerate :: IO ()
 testGenerate = do
   quickCheck $ withMaxSuccess 10 $ forAll (genPos >*< elements [1 .. 9]) $ uncurry propGenSolvedIsSolved
-  quickCheck $ once $ propGenRandomSolvedIsRandom
+  quickCheck $ once propGenRandomSolvedIsRandom
   quickCheck $ withMaxSuccess 10 propGenRandomFromGenIsRepeated

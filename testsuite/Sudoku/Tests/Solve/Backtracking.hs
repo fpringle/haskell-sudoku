@@ -32,12 +32,10 @@ propNextBlank s pos = do
   let idx = i * 9 + j
   let next = nextBlank s pos
   case next of
-    Nothing       -> property $ not $ elem 0 $ drop (idx + 1) flat
+    Nothing       -> property $ notElem 0 $ drop (idx + 1) flat
     Just (ni, nj) -> let nidx = ni * 9 + nj
-                     in (
-                        (flat !! nidx == 0) .&&.
-                        (not $ elem 0 $ drop (idx + 1) $ take (nidx) flat)
-                        )
+                     in (flat !! nidx == 0) .&&. notElem 0 (drop (idx + 1) $ take nidx flat)
+                        
 
 testBacktracking :: IO ()
 testBacktracking = do

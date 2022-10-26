@@ -37,10 +37,11 @@ module Sudoku.Types (
   ) where
 
 import Data.List
+import Data.Maybe (fromMaybe)
 
 {- | Abstract type representing a 2-dimensional grid.
 -}
-data Grid a = Grid [[a]]
+newtype Grid a = Grid [[a]]
   deriving (Show, Eq)
 
 {- | map over the rows of a 'Grid'
@@ -111,7 +112,7 @@ getBoxCoordsFlat x = let Grid xs = getBoxCoords x in concat xs
 {- | get a box of the grid as a Grid
 -}
 getBox :: Grid a -> Int -> Grid a
-getBox s x = fmap (s !!!) $ getBoxCoords x
+getBox s = fmap (s !!!) . getBoxCoords
 
 {- | get a box of the grid as a list
 -}
@@ -121,7 +122,7 @@ getBoxFlat s x = map (s !!!) $ getBoxCoordsFlat x
 {- | get the index of the box a cell belongs to
 -}
 getBoxFromCoord :: Pos -> Int
-getBoxFromCoord (i, j) = (div i 3) * 3 + (div j 3)
+getBoxFromCoord (i, j) = div i 3 * 3 + div j 3
 
 {- | all cell positions as a 2D Grid
 -}
@@ -154,9 +155,6 @@ according to the map
 -}
 replaceValues :: (Show a, Eq a) => [(a, a)] -> Grid a -> Grid a
 replaceValues replacements = fmap helper
-  where
-    -- helper :: a -> a
-    helper x =
-      case lookup x replacements of
-        Nothing -> error ("bad lookup: " ++ (show x) ++ " (replacements: " ++ (show replacements) ++ ")")
-        Just y -> y
+  where helper x = fromMaybe errMsg maybeResult
+          where errMsg = error ("bad lookup: " ++ show x ++ " (replacements: " ++ show replacements ++ ")")
+                maybeResult = lookup x replacements
