@@ -16,7 +16,7 @@ For documentation, see [here](https://fpringle.github.io/haskell-sudoku/).
     cabal new-test --test-show-details=streaming
     ```
 
-3.  Run server tests with JS (with server running in separate window/tab):
+3.  Run server tests with JS, with server running in separate window/tab (see #1):
     ```bash
     cd testsuite/test-server-js/
     npm install
