@@ -8,8 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 {-# LANGUAGE OverloadedStrings #-}
 
-{- | Handle POST requests when running the Sudoku solver.
--}
+-- | Handle POST requests when running the Sudoku solver.
 
 module Sudoku.Server.Post where
 
@@ -25,8 +24,7 @@ import Sudoku.Solve.Backtracking
 import Sudoku.Server.Util
 
 
-{- | Handle an HTTP POST reqest on the /solve API path.
--}
+-- | Handle an HTTP POST reqest on the /solve API path.
 handleSolve :: Application
 handleSolve request respond = do
   body <- strictRequestBody request
@@ -39,8 +37,7 @@ handleSolve request respond = do
             let serialized = encode solved
             respond (responseLBS ok200 [] serialized)
 
-{- | Handle an HTTP POST reqest.
--}
+-- | Handle an HTTP POST reqest.
 handlePost :: Application
 handlePost request respond = do
   let path = pathInfo request

@@ -68,8 +68,7 @@ handleUnknownMethod :: B.ByteString -> (Response -> IO ResponseReceived) -> IO R
 handleUnknownMethod method respond =
   respond $ responseLBS methodNotAllowed405 [] ("Unsupported HTTP method: " <> BL.fromStrict method)
 
-{- | The main function of the Server module.
--}
+-- | The main function of the Server module.
 server :: Application
 server request respond = do
   let method = requestMethod request

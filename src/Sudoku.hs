@@ -6,8 +6,7 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree.
 -}
 
-{- | A library for generating, checking and solving Sudoku puzzles.
--}
+-- | A library for generating, checking and solving Sudoku puzzles.
 
 module Sudoku (
   module Sudoku.Types

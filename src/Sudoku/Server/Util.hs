@@ -8,8 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 {-# LANGUAGE OverloadedStrings #-}
 
-{- | Utility functions used by the Sudoku server.
--}
+-- | Utility functions used by the Sudoku server.
 
 module Sudoku.Server.Util (
   handleBadPath
@@ -33,7 +32,6 @@ instance FromJSON a => FromJSON (Grid a) where
   parseJSON (Object v) = Grid <$> v .: "board"
   parseJSON other = error ("invalid grid JSON: " ++ show other)
 
-{- | Handle an invalid path
--}
+-- | Handle an invalid path
 handleBadPath :: B.ByteString -> (Response -> IO ResponseReceived) -> IO ResponseReceived
 handleBadPath path respond = respond $ responseLBS notFound404 [] $ BL.fromStrict ("Invalid request path: " <> path)

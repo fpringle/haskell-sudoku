@@ -8,8 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 {-# LANGUAGE OverloadedStrings #-}
 
-{- | Handle GET requests when running the Sudoku solver.
--}
+-- | Handle GET requests when running the Sudoku solver.
 
 module Sudoku.Server.Get where
 
@@ -27,8 +26,7 @@ import Sudoku.Server.Util
 import Sudoku.Generate
 
 
-{- | Handle an HTTP GET reqest on the /board API path.
--}
+-- | Handle an HTTP GET reqest on the /board API path.
 handleBoard :: Application
 handleBoard request respond = do
   let query = queryString request
@@ -45,8 +43,7 @@ handleBoard request respond = do
           let serialized = encode grid
           respond (responseLBS ok200 [] serialized)
 
-{- | Handle an HTTP GET reqest.
--}
+-- | Handle an HTTP GET reqest.
 handleGet :: Application
 handleGet request respond = do
   let path = pathInfo request

@@ -6,8 +6,7 @@ This source code is licensed under the BSD-style license found in the
 LICENSE file in the root directory of this source tree.
 -}
 
-{- | Generate random Sudoku grids.
--}
+-- | Generate random Sudoku grids.
 
 module Sudoku.Generate (
   generateSolved
@@ -25,31 +24,27 @@ import Sudoku.Util
 import Sudoku.Solve.Backtracking
 
 
-{- | Given a Sudoku grid with only one number, generate a solved grid.
--}
+-- | Given a Sudoku grid with only one number, generate a solved grid.
 generateSolvedFromFirst :: Pos -> Int -> Sudoku
 generateSolvedFromFirst pos val = fromMaybe errMsg maybeSol
   where errMsg = error ("Couldn't solve grid starting at " ++ show pos ++ " = " ++ show val)
         maybeSol = backtrack $ place blank pos val
 
-{- | Generate a solved grid using a 'RandomGen'.
--}
+-- | Generate a solved grid using a 'RandomGen'.
 generateSolvedFromGen :: (Monad m, RandomGen g) => g -> m Sudoku
 generateSolvedFromGen gen =
   do
     let [i,j,y] = take 3 $ randomRs (0, 8) gen :: [Int]
     return $ generateSolvedFromFirst (i, j) (y+1)
 
-{- | Generate a solved Sudoku grid.
--}
+-- | Generate a solved Sudoku grid.
 generateSolved :: IO Sudoku
 generateSolved = do
   g <- newStdGen
   generateSolvedFromGen g
 
-{- | given a sudoku grid and a generator, replace the numbers
-i.e. the same solution but with different numbers (e.g all 1 -> 9, all 5 -> 2 etc)
--}
+-- | given a sudoku grid and a generator, replace the numbers
+-- i.e. the same solution but with different numbers (e.g all 1 -> 9, all 5 -> 2 etc)
 flipRandom :: (RandomGen g) => g -> Sudoku -> Sudoku
 flipRandom generator grid =
   let
@@ -70,8 +65,7 @@ generateSolveableFromFirst pos val blanks generator =
       in
         foldr (\i b -> place b (notBlank !! i) 0) cur toDelete
 
-{- | Generate a solveable Sudoku grid with a given number of empty spaces
--}
+-- | Generate a solveable Sudoku grid with a given number of empty spaces
 generateSolveable :: Int -> IO Sudoku
 generateSolveable blanks = do
   gen <- newStdGen
