@@ -35,5 +35,5 @@ module Sudoku.Solve
     , backtrackList
   ) where
 
-import Sudoku.Solve.Basic
-import Sudoku.Solve.Backtracking
+import           Sudoku.Solve.Backtracking
+import           Sudoku.Solve.Basic

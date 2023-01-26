@@ -8,12 +8,12 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Tests.Util where
 
-import Test.QuickCheck
-import Test.QuickCheck.Instances.Tuple
+import           Test.QuickCheck
+import           Test.QuickCheck.Instances.Tuple
 
-import Sudoku.Types
-import Sudoku.Util
-import Sudoku.Tests.TestUtils
+import           Sudoku.Tests.TestUtils
+import           Sudoku.Types
+import           Sudoku.Util
 
 
 propGetBoxCoords :: Int -> Property

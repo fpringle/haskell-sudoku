@@ -14,18 +14,18 @@ module Sudoku.Solve.Backtracking (
   , nextBlank
   ) where
 
-import Sudoku.Types
-import Sudoku.Util
-import Sudoku.Validity
-import Sudoku.Solve.Basic
+import           Sudoku.Solve.Basic
+import           Sudoku.Types
+import           Sudoku.Util
+import           Sudoku.Validity
 
-{- | Get the next position in a grid (row-column order), if there is one.                                                               
-                                                                                                                                        
-@                                                                                                                                       
-   nextPos (0, 4) == Just (0, 5)                                                                                                        
-   nextPos (2, 8) == Just (3, 0)                                                                                                        
-   nextPos (8, 8) == Nothing                                                                                                            
-@                                                                                                                                       
+{- | Get the next position in a grid (row-column order), if there is one.
+
+@
+   nextPos (0, 4) == Just (0, 5)
+   nextPos (2, 8) == Just (3, 0)
+   nextPos (8, 8) == Nothing
+@
 -}
 nextPos :: Pos -> Maybe Pos
 nextPos (i, j)

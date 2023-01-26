@@ -41,12 +41,12 @@ module Sudoku.Solve.Basic (
 
   ) where
 
-import Data.Function
-import Data.List
+import           Data.Function
+import           Data.List
 
-import Sudoku.Types
-import Sudoku.Util
-import Sudoku.Validity
+import           Sudoku.Types
+import           Sudoku.Util
+import           Sudoku.Validity
 
 -- | A list-like datatype that can contain either one or many elements
 data OneOrMany a = One a | Many [a]
@@ -57,7 +57,7 @@ data OneOrMany a = One a | Many [a]
 type Options = OneOrMany Int
 
 instance Foldable OneOrMany where
-  foldMap f (One x) = f x
+  foldMap f (One x)   = f x
   foldMap f (Many xs) = foldMap f xs
 
 -- | Count the occurrences of an Int in a list of 'Options'
@@ -81,7 +81,7 @@ lengthOptions (Many xs) = length xs
 
 -- | Delete an option from an 'Options' object.
 deleteOption :: Int -> Options -> Options
-deleteOption val (One x) = if val == x then Many [] else One x
+deleteOption val (One x)   = if val == x then Many [] else One x
 deleteOption val (Many xs) = makeOptions $ delete val xs
 
 instance Show a => Show (OneOrMany a) where
@@ -91,10 +91,10 @@ instance Show a => Show (OneOrMany a) where
 -- | Two 'OneOrMany' objects are considered equal if they have the same elements,
 -- regardless of constructor or order of elements.
 instance Ord a => Eq (OneOrMany a) where
-  One x   == One y      = x == y
-  Many xs == Many ys    = sort xs == sort ys
-  One x   == Many xs    = [x] == xs
-  Many xs == One x      = [x] == xs
+  One x   == One y   = x == y
+  Many xs == Many ys = sort xs == sort ys
+  One x   == Many xs = [x] == xs
+  Many xs == One x   = [x] == xs
 
 -- | SudokuWithOptions represents a partially complete sudoku grid,
 -- and the knowledge we have about the potential values of each cell
@@ -152,8 +152,8 @@ eliminateOptions s = foldr helper s allSquaresFlat
     -- of x from its row, column and box
     helper :: Pos -> SudokuWithOptions -> SudokuWithOptions
     helper pos grid = case grid !!! pos of
-        Many xs     -> grid
-        One x       -> reduceOptions pos x grid
+        Many xs -> grid
+        One x   -> reduceOptions pos x grid
 
     -- eliminate occurrences
     reduceOptions :: Pos -> Int -> SudokuWithOptions -> SudokuWithOptions

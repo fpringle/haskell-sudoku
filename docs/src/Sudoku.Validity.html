@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-
+Copyright (c) 2022, Frederick Pringle
+All rights reserved.
+
+This source code is licensed under the BSD-style license found in the
+LICENSE file in the root directory of this source tree.
+-}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- | Functions to check the validity and correctness of a Sudoku grid.</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Sudoku.Validity</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-12"></span><span>    </span><span class="annot"><span class="hs-comment">{- * Grid predicates
+    -}</span></span><span>
+</span><span id="line-14"></span><span>    </span><span class="annot"><a href="Sudoku.Validity.html#isValid"><span class="hs-identifier">isValid</span></a></span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Validity.html#isRightSize"><span class="hs-identifier">isRightSize</span></a></span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-comment">-- , isValidFunc</span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Validity.html#isValidRows"><span class="hs-identifier">isValidRows</span></a></span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Validity.html#isValidCols"><span class="hs-identifier">isValidCols</span></a></span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Validity.html#isValidBoxes"><span class="hs-identifier">isValidBoxes</span></a></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span>    </span><span class="annot"><span class="hs-comment">{- * Solution predicates
+    -}</span></span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Validity.html#isSolved"><span class="hs-identifier">isSolved</span></a></span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Types.html"><span class="hs-identifier">Sudoku.Types</span></a></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Util.html"><span class="hs-identifier">Sudoku.Util</span></a></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- | check that a grid has the right dimensions</span><span>
+</span><span id="line-30"></span><span class="annot"><a href="Sudoku.Validity.html#isRightSize"><span class="hs-identifier hs-type">isRightSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-31"></span><span id="isRightSize"><span class="annot"><span class="annottext">isRightSize :: Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isRightSize"><span class="hs-identifier hs-var hs-var">isRightSize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679082266"><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679082266"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[Int]] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679082266"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Bool) -&gt; [[Int]] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679082262"><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679082262"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679082262"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679082266"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- | check that a list has no duplicate elements</span><span>
+</span><span id="line-34"></span><span class="annot"><a href="Sudoku.Validity.html#noDuplicates"><span class="hs-identifier hs-type">noDuplicates</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-35"></span><span id="noDuplicates"><span class="annot"><span class="annottext">noDuplicates :: [Int] -&gt; Bool
+</span><a href="Sudoku.Validity.html#noDuplicates"><span class="hs-identifier hs-var hs-var">noDuplicates</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-36"></span><span class="annot"><a href="Sudoku.Validity.html#noDuplicates"><span class="hs-identifier hs-var">noDuplicates</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082260"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082260"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679082259"><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679082259"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082260"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">notElem</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082260"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679082259"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Bool
+</span><a href="Sudoku.Validity.html#noDuplicates"><span class="hs-identifier hs-var">noDuplicates</span></a></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679082259"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="annot"><a href="Sudoku.Validity.html#isValidFunc"><span class="hs-identifier hs-type">isValidFunc</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-39"></span><span id="isValidFunc"><span class="annot"><span class="annottext">isValidFunc :: (Sudoku -&gt; Int -&gt; [Int]) -&gt; Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidFunc"><span class="hs-identifier hs-var hs-var">isValidFunc</span></a></span></span><span> </span><span id="local-6989586621679082255"><span class="annot"><span class="annottext">Sudoku -&gt; Int -&gt; [Int]
+</span><a href="#local-6989586621679082255"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679082254"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082254"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Bool) -&gt; [Int] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Int] -&gt; Bool
+</span><a href="Sudoku.Validity.html#noDuplicates"><span class="hs-identifier hs-var">noDuplicates</span></a></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Bool) -&gt; (Int -&gt; [Int]) -&gt; Int -&gt; Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Int -&gt; [Int]
+</span><a href="#local-6989586621679082255"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082254"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">]</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- | check that a grid has no rows with duplicate elements</span><span>
+</span><span id="line-42"></span><span class="annot"><a href="Sudoku.Validity.html#isValidRows"><span class="hs-identifier hs-type">isValidRows</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-43"></span><span id="isValidRows"><span class="annot"><span class="annottext">isValidRows :: Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidRows"><span class="hs-identifier hs-var hs-var">isValidRows</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Sudoku -&gt; Int -&gt; [Int]) -&gt; Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidFunc"><span class="hs-identifier hs-var">isValidFunc</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Int -&gt; [Int]
+</span><a href="Sudoku.Types.html#getRow"><span class="hs-identifier hs-var">getRow</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- | check that a grid has no cols with duplicate elements</span><span>
+</span><span id="line-46"></span><span class="annot"><a href="Sudoku.Validity.html#isValidCols"><span class="hs-identifier hs-type">isValidCols</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-47"></span><span id="isValidCols"><span class="annot"><span class="annottext">isValidCols :: Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidCols"><span class="hs-identifier hs-var hs-var">isValidCols</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Sudoku -&gt; Int -&gt; [Int]) -&gt; Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidFunc"><span class="hs-identifier hs-var">isValidFunc</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Int -&gt; [Int]
+</span><a href="Sudoku.Types.html#getCol"><span class="hs-identifier hs-var">getCol</span></a></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- | check that a grid has no boxes with duplicate elements</span><span>
+</span><span id="line-50"></span><span class="annot"><a href="Sudoku.Validity.html#isValidBoxes"><span class="hs-identifier hs-type">isValidBoxes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-51"></span><span id="isValidBoxes"><span class="annot"><span class="annottext">isValidBoxes :: Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidBoxes"><span class="hs-identifier hs-var hs-var">isValidBoxes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Sudoku -&gt; Int -&gt; [Int]) -&gt; Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidFunc"><span class="hs-identifier hs-var">isValidFunc</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Int -&gt; [Int]
+forall a. Grid a -&gt; Int -&gt; [a]
+</span><a href="Sudoku.Types.html#getBoxFlat"><span class="hs-identifier hs-var">getBoxFlat</span></a></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-comment">-- | check that a grid is valid</span><span>
+</span><span id="line-54"></span><span class="annot"><a href="Sudoku.Validity.html#isValid"><span class="hs-identifier hs-type">isValid</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-55"></span><span id="isValid"><span class="annot"><span class="annottext">isValid :: Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValid"><span class="hs-identifier hs-var hs-var">isValid</span></a></span></span><span> </span><span id="local-6989586621679082249"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082249"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isRightSize"><span class="hs-identifier hs-var">isRightSize</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082249"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidRows"><span class="hs-identifier hs-var">isValidRows</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082249"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidCols"><span class="hs-identifier hs-var">isValidCols</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082249"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValidBoxes"><span class="hs-identifier hs-var">isValidBoxes</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082249"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- | check that a grid is solved, i.e. complete and valid</span><span>
+</span><span id="line-58"></span><span class="annot"><a href="Sudoku.Validity.html#isSolved"><span class="hs-identifier hs-type">isSolved</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-59"></span><span id="isSolved"><span class="annot"><span class="annottext">isSolved :: Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isSolved"><span class="hs-identifier hs-var hs-var">isSolved</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679082248"><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679082248"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValid"><span class="hs-identifier hs-var">isValid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[Int]] -&gt; Sudoku
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679082248"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Bool) -&gt; [[Int]] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">notElem</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679082248"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-60"></span></pre></body></html>

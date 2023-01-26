@@ -8,10 +8,10 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Tests.Types where
 
-import Test.QuickCheck
+import           Test.QuickCheck
 
-import Sudoku.Types
-import Sudoku.Tests.TestUtils
+import           Sudoku.Tests.TestUtils
+import           Sudoku.Types
 
 propCorrectHeight :: Sudoku -> Property
 propCorrectHeight (Grid s) = length s === 9

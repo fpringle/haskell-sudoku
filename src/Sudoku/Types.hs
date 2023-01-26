@@ -35,8 +35,8 @@ module Sudoku.Types (
   , replaceValues
   ) where
 
-import Data.List
-import Data.Maybe (fromMaybe)
+import           Data.List
+import           Data.Maybe (fromMaybe)
 
 -- | Abstract type representing a 2-dimensional grid.
 newtype Grid a = Grid [[a]]

@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-
+Copyright (c) 2022, Frederick Pringle
+All rights reserved.
+
+This source code is licensed under the BSD-style license found in the
+LICENSE file in the root directory of this source tree.
+-}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-comment">-- | Handle POST requests when running the Sudoku solver.</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Sudoku.Server.Post</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Char8</span></span><span>     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BL</span></span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.HTTP.Types.Status</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">badRequest400</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">notFound404</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ok200</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.Wai</span></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Server.Util.html"><span class="hs-identifier">Sudoku.Server.Util</span></a></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Solve.Backtracking.html"><span class="hs-identifier">Sudoku.Solve.Backtracking</span></a></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Types.html"><span class="hs-identifier">Sudoku.Types</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- | Handle an HTTP POST reqest on the /solve API path.</span><span>
+</span><span id="line-28"></span><span class="annot"><a href="Sudoku.Server.Post.html#handleSolve"><span class="hs-identifier hs-type">handleSolve</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Application</span></span><span>
+</span><span id="line-29"></span><span id="handleSolve"><span class="annot"><span class="annottext">handleSolve :: Application
+</span><a href="Sudoku.Server.Post.html#handleSolve"><span class="hs-identifier hs-var hs-var">handleSolve</span></a></span></span><span> </span><span id="local-6989586621679082631"><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082631"><span class="hs-identifier hs-var">request</span></a></span></span><span> </span><span id="local-6989586621679082630"><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082630"><span class="hs-identifier hs-var">respond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679082629"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082629"><span class="hs-identifier hs-var">body</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Request -&gt; IO ByteString
+</span><span class="hs-identifier hs-var">strictRequestBody</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082631"><span class="hs-identifier hs-var">request</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082627"><span class="annot"><span class="annottext">decoded :: Maybe Sudoku
+</span><a href="#local-6989586621679082627"><span class="hs-identifier hs-var hs-var">decoded</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe Sudoku
+forall a. FromJSON a =&gt; ByteString -&gt; Maybe a
+</span><span class="hs-identifier hs-var">decode</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082629"><span class="hs-identifier hs-var">body</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe Sudoku
+</span><a href="#local-6989586621679082627"><span class="hs-identifier hs-var">decoded</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-33"></span><span>    </span><span class="annot"><span class="annottext">Maybe Sudoku
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082630"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">badRequest400</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Invalid grid format&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082624"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082624"><span class="hs-identifier hs-var">grid</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Maybe Sudoku
+</span><a href="Sudoku.Solve.Backtracking.html#backtrack"><span class="hs-identifier hs-var">backtrack</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082624"><span class="hs-identifier hs-var">grid</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-35"></span><span>        </span><span class="annot"><span class="annottext">Maybe Sudoku
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082630"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">ok200</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Couldn't solve grid :(&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082622"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082622"><span class="hs-identifier hs-var">solved</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-37"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082621"><span class="annot"><span class="annottext">serialized :: ByteString
+</span><a href="#local-6989586621679082621"><span class="hs-identifier hs-var hs-var">serialized</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; ByteString
+forall a. ToJSON a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082622"><span class="hs-identifier hs-var">solved</span></a></span><span>
+</span><span id="line-38"></span><span>            </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082630"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">ok200</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082621"><span class="hs-identifier hs-var">serialized</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | Handle an HTTP POST reqest.</span><span>
+</span><span id="line-41"></span><span class="annot"><a href="Sudoku.Server.Post.html#handlePost"><span class="hs-identifier hs-type">handlePost</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Application</span></span><span>
+</span><span id="line-42"></span><span id="handlePost"><span class="annot"><span class="annottext">handlePost :: Application
+</span><a href="Sudoku.Server.Post.html#handlePost"><span class="hs-identifier hs-var hs-var">handlePost</span></a></span></span><span> </span><span id="local-6989586621679082618"><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082618"><span class="hs-identifier hs-var">request</span></a></span></span><span> </span><span id="local-6989586621679082617"><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082617"><span class="hs-identifier hs-var">respond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082616"><span class="annot"><span class="annottext">path :: [Text]
+</span><a href="#local-6989586621679082616"><span class="hs-identifier hs-var hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Request -&gt; [Text]
+</span><span class="hs-identifier hs-var hs-var">pathInfo</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082618"><span class="hs-identifier hs-var">request</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679082616"><span class="hs-identifier hs-var">path</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;solve&quot;</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Application
+</span><a href="Sudoku.Server.Post.html#handleSolve"><span class="hs-identifier hs-var">handleSolve</span></a></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082618"><span class="hs-identifier hs-var">request</span></a></span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082617"><span class="hs-identifier hs-var">respond</span></a></span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679082614"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679082614"><span class="hs-identifier hs-var">other</span></a></span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString
+-&gt; (Response -&gt; IO ResponseReceived) -&gt; IO ResponseReceived
+</span><a href="Sudoku.Server.Util.html#handleBadPath"><span class="hs-identifier hs-var">handleBadPath</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Request -&gt; ByteString
+</span><span class="hs-identifier hs-var hs-var">rawPathInfo</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082618"><span class="hs-identifier hs-var">request</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082617"><span class="hs-identifier hs-var">respond</span></a></span><span>
+</span><span id="line-47"></span></pre></body></html>

@@ -25,12 +25,12 @@ module Sudoku.Util (
   , readFromCSV
   ) where
 
-import Data.List
-import System.IO
+import           Data.List
+import           System.IO
 
 import qualified System.IO.Strict as Strict
 
-import Sudoku.Types
+import           Sudoku.Types
 
 -- | convert a grid to a simple string representation - blanks are represented as '.'
 showSudoku :: Sudoku -> String

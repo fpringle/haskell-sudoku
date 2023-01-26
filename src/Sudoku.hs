@@ -17,9 +17,9 @@ module Sudoku (
   , module Sudoku.Validity
   ) where
 
-import Sudoku.Types
-import Sudoku.Generate
-import Sudoku.Util
-import Sudoku.Validity
-import Sudoku.Solve
-import Sudoku.Server
+import           Sudoku.Generate
+import           Sudoku.Server
+import           Sudoku.Solve
+import           Sudoku.Types
+import           Sudoku.Util
+import           Sudoku.Validity

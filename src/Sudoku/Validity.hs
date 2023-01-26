@@ -23,8 +23,8 @@ module Sudoku.Validity (
     , isSolved
   ) where
 
-import Sudoku.Types
-import Sudoku.Util
+import           Sudoku.Types
+import           Sudoku.Util
 
 -- | check that a grid has the right dimensions
 isRightSize :: Sudoku -> Bool
@@ -32,7 +32,7 @@ isRightSize (Grid s) = (length s == 9) && all (\r -> length r == 9) s
 
 -- | check that a list has no duplicate elements
 noDuplicates :: [Int] -> Bool
-noDuplicates [] = True
+noDuplicates []     = True
 noDuplicates (x:xs) = (x == 0 || notElem x xs) && noDuplicates xs
 
 isValidFunc :: (Sudoku -> Int -> [Int]) -> Sudoku -> Bool

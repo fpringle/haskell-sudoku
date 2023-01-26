@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-
+Copyright (c) 2022, Frederick Pringle
+All rights reserved.
+
+This source code is licensed under the BSD-style license found in the
+LICENSE file in the root directory of this source tree.
+-}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-comment">-- | Handle GET requests when running the Sudoku solver.</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Sudoku.Server.Get</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Char8</span></span><span>     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BL</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Read</span></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.HTTP.Types.Status</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">badRequest400</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">notFound404</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ok200</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Network.Wai</span></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Generate.html"><span class="hs-identifier">Sudoku.Generate</span></a></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Server.Util.html"><span class="hs-identifier">Sudoku.Server.Util</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Solve.Backtracking.html"><span class="hs-identifier">Sudoku.Solve.Backtracking</span></a></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Types.html"><span class="hs-identifier">Sudoku.Types</span></a></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- | Handle an HTTP GET reqest on the /board API path.</span><span>
+</span><span id="line-30"></span><span class="annot"><a href="Sudoku.Server.Get.html#handleBoard"><span class="hs-identifier hs-type">handleBoard</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Application</span></span><span>
+</span><span id="line-31"></span><span id="handleBoard"><span class="annot"><span class="annottext">handleBoard :: Application
+</span><a href="Sudoku.Server.Get.html#handleBoard"><span class="hs-identifier hs-var hs-var">handleBoard</span></a></span></span><span> </span><span id="local-6989586621679082780"><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082780"><span class="hs-identifier hs-var">request</span></a></span></span><span> </span><span id="local-6989586621679082779"><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082779"><span class="hs-identifier hs-var">respond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082778"><span class="annot"><span class="annottext">query :: Query
+</span><a href="#local-6989586621679082778"><span class="hs-identifier hs-var hs-var">query</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Request -&gt; Query
+</span><span class="hs-identifier hs-var hs-var">queryString</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082780"><span class="hs-identifier hs-var">request</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Query -&gt; Maybe (Maybe ByteString)
+forall a b. Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
+</span><span class="hs-identifier hs-var">lookup</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;blanks&quot;</span></span><span> </span><span class="annot"><span class="annottext">Query
+</span><a href="#local-6989586621679082778"><span class="hs-identifier hs-var">query</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><span class="annottext">Maybe (Maybe ByteString)
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082779"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">badRequest400</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;Number of blanks not specified&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">Maybe ByteString
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082779"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">badRequest400</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;\&quot;blanks\&quot; parameter must be an integer&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082774"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082774"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; String
+</span><span class="hs-identifier hs-var">B.unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082774"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-37"></span><span>      </span><span class="annot"><span class="annottext">Maybe Int
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082779"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">badRequest400</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;\&quot;blanks\&quot; parameter must be an integer&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082771"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082771"><span class="hs-identifier hs-var">blanks</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-39"></span><span>        </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082771"><span class="hs-identifier hs-var">blanks</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082771"><span class="hs-identifier hs-var">blanks</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">81</span></span><span>
+</span><span id="line-40"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082779"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">badRequest400</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-string">&quot;\&quot;blanks\&quot; parameter must be an integer between 0 and 81&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-42"></span><span>          </span><span id="local-6989586621679082767"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082767"><span class="hs-identifier hs-var">grid</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO Sudoku
+</span><a href="Sudoku.Generate.html#generateSolveable"><span class="hs-identifier hs-var">generateSolveable</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082771"><span class="hs-identifier hs-var">blanks</span></a></span><span>
+</span><span id="line-43"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082765"><span class="annot"><span class="annottext">serialized :: ByteString
+</span><a href="#local-6989586621679082765"><span class="hs-identifier hs-var hs-var">serialized</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; ByteString
+forall a. ToJSON a =&gt; a -&gt; ByteString
+</span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082767"><span class="hs-identifier hs-var">grid</span></a></span><span>
+</span><span id="line-44"></span><span>          </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082779"><span class="hs-identifier hs-var">respond</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Status -&gt; ResponseHeaders -&gt; ByteString -&gt; Response
+</span><span class="hs-identifier hs-var">responseLBS</span></span><span> </span><span class="annot"><span class="annottext">Status
+</span><span class="hs-identifier hs-var">ok200</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679082765"><span class="hs-identifier hs-var">serialized</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- | Handle an HTTP GET reqest.</span><span>
+</span><span id="line-47"></span><span class="annot"><a href="Sudoku.Server.Get.html#handleGet"><span class="hs-identifier hs-type">handleGet</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Application</span></span><span>
+</span><span id="line-48"></span><span id="handleGet"><span class="annot"><span class="annottext">handleGet :: Application
+</span><a href="Sudoku.Server.Get.html#handleGet"><span class="hs-identifier hs-var hs-var">handleGet</span></a></span></span><span> </span><span id="local-6989586621679082762"><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082762"><span class="hs-identifier hs-var">request</span></a></span></span><span> </span><span id="local-6989586621679082761"><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082761"><span class="hs-identifier hs-var">respond</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679082760"><span class="annot"><span class="annottext">path :: [Text]
+</span><a href="#local-6989586621679082760"><span class="hs-identifier hs-var hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Request -&gt; [Text]
+</span><span class="hs-identifier hs-var hs-var">pathInfo</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082762"><span class="hs-identifier hs-var">request</span></a></span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679082760"><span class="hs-identifier hs-var">path</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;board&quot;</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Application
+</span><a href="Sudoku.Server.Get.html#handleBoard"><span class="hs-identifier hs-var">handleBoard</span></a></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082762"><span class="hs-identifier hs-var">request</span></a></span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082761"><span class="hs-identifier hs-var">respond</span></a></span><span>
+</span><span id="line-52"></span><span>    </span><span id="local-6989586621679082758"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679082758"><span class="hs-identifier hs-var">other</span></a></span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString
+-&gt; (Response -&gt; IO ResponseReceived) -&gt; IO ResponseReceived
+</span><a href="Sudoku.Server.Util.html#handleBadPath"><span class="hs-identifier hs-var">handleBadPath</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Request -&gt; ByteString
+</span><span class="hs-identifier hs-var hs-var">rawPathInfo</span></span><span> </span><span class="annot"><span class="annottext">Request
+</span><a href="#local-6989586621679082762"><span class="hs-identifier hs-var">request</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Response -&gt; IO ResponseReceived
+</span><a href="#local-6989586621679082761"><span class="hs-identifier hs-var">respond</span></a></span><span>
+</span><span id="line-53"></span></pre></body></html>

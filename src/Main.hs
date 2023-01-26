@@ -8,9 +8,9 @@ LICENSE file in the root directory of this source tree.
 
 module Main where
 
-import Network.Wai.Handler.Warp (run)
+import           Network.Wai.Handler.Warp (run)
 
-import Sudoku.Server (server)
+import           Sudoku.Server            (server)
 
 
 main :: IO ()

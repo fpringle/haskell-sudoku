@@ -12,16 +12,16 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Server.Post where
 
-import qualified Data.ByteString.Lazy as BL
-import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString.Char8     as B
+import qualified Data.ByteString.Lazy      as BL
 
-import Data.Aeson
-import Network.HTTP.Types.Status (ok200, badRequest400, notFound404)
-import Network.Wai
+import           Data.Aeson
+import           Network.HTTP.Types.Status (badRequest400, notFound404, ok200)
+import           Network.Wai
 
-import Sudoku.Types
-import Sudoku.Solve.Backtracking
-import Sudoku.Server.Util
+import           Sudoku.Server.Util
+import           Sudoku.Solve.Backtracking
+import           Sudoku.Types
 
 
 -- | Handle an HTTP POST reqest on the /solve API path.
@@ -42,5 +42,5 @@ handlePost :: Application
 handlePost request respond = do
   let path = pathInfo request
   case path of
-    ["solve"]   -> handleSolve request respond
-    other       -> handleBadPath (rawPathInfo request) respond
+    ["solve"] -> handleSolve request respond
+    other     -> handleBadPath (rawPathInfo request) respond

@@ -10,13 +10,13 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Tests.TestUtils where
 
-import Test.QuickCheck
-import Test.QuickCheck.Instances.Tuple
+import           Test.QuickCheck
+import           Test.QuickCheck.Instances.Tuple
 
-import Sudoku.Types
-import Sudoku.Util
-import Sudoku.Validity
-import Sudoku.Solve.Basic
+import           Sudoku.Solve.Basic
+import           Sudoku.Types
+import           Sudoku.Util
+import           Sudoku.Validity
 
 
 genSudoku :: Gen Sudoku

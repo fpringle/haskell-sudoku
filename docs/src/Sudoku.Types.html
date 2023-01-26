@@ -1,0 +1,453 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-
+Copyright (c) 2022, Frederick Pringle
+All rights reserved.
+
+This source code is licensed under the BSD-style license found in the
+LICENSE file in the root directory of this source tree.
+-}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- | Sudoku.Types defines the datatypes used by the library and the solver.</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Sudoku.Types</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><span class="hs-comment">{- * Grid and position types
+   -}</span></span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier">Grid</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier">Sudoku</span></a></span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier">Pos</span></a></span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#blank"><span class="hs-identifier">blank</span></a></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><span class="hs-comment">{- * Functions on grids
+  -}</span></span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator">(!!!)</span></a></span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getRow"><span class="hs-identifier">getRow</span></a></span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getCol"><span class="hs-identifier">getCol</span></a></span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getBoxCoords"><span class="hs-identifier">getBoxCoords</span></a></span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getBoxCoordsFlat"><span class="hs-identifier">getBoxCoordsFlat</span></a></span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getBox"><span class="hs-identifier">getBox</span></a></span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getBoxFlat"><span class="hs-identifier">getBoxFlat</span></a></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#getBoxFromCoord"><span class="hs-identifier">getBoxFromCoord</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#allSquares"><span class="hs-identifier">allSquares</span></a></span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#allSquaresFlat"><span class="hs-identifier">allSquaresFlat</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#mapRows"><span class="hs-identifier">mapRows</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#transposeGrid"><span class="hs-identifier">transposeGrid</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#place"><span class="hs-identifier">place</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#similar"><span class="hs-identifier">similar</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Types.html#replaceValues"><span class="hs-identifier">replaceValues</span></a></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">fromMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- | Abstract type representing a 2-dimensional grid.</span><span>
+</span><span id="line-42"></span><span class="hs-keyword">newtype</span><span> </span><span id="Grid"><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span></span><span> </span><span id="local-6989586621679082086"><span class="annot"><a href="#local-6989586621679082086"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Grid"><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679082086"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082020"><span id="local-6989586621679082022"><span id="local-6989586621679082024"><span class="annot"><span class="annottext">Int -&gt; Grid a -&gt; ShowS
+[Grid a] -&gt; ShowS
+Grid a -&gt; String
+(Int -&gt; Grid a -&gt; ShowS)
+-&gt; (Grid a -&gt; String) -&gt; ([Grid a] -&gt; ShowS) -&gt; Show (Grid a)
+forall a. Show a =&gt; Int -&gt; Grid a -&gt; ShowS
+forall a. Show a =&gt; [Grid a] -&gt; ShowS
+forall a. Show a =&gt; Grid a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Grid a] -&gt; ShowS
+$cshowList :: forall a. Show a =&gt; [Grid a] -&gt; ShowS
+show :: Grid a -&gt; String
+$cshow :: forall a. Show a =&gt; Grid a -&gt; String
+showsPrec :: Int -&gt; Grid a -&gt; ShowS
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Grid a -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082015"><span id="local-6989586621679082017"><span class="annot"><span class="annottext">Grid a -&gt; Grid a -&gt; Bool
+(Grid a -&gt; Grid a -&gt; Bool)
+-&gt; (Grid a -&gt; Grid a -&gt; Bool) -&gt; Eq (Grid a)
+forall a. Eq a =&gt; Grid a -&gt; Grid a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Grid a -&gt; Grid a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Grid a -&gt; Grid a -&gt; Bool
+== :: Grid a -&gt; Grid a -&gt; Bool
+$c== :: forall a. Eq a =&gt; Grid a -&gt; Grid a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- | map over the rows of a 'Grid'</span><span>
+</span><span id="line-46"></span><span id="local-6989586621679082012"><span id="local-6989586621679082013"><span class="annot"><a href="Sudoku.Types.html#mapRows"><span class="hs-identifier hs-type">mapRows</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679082013"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679082012"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082013"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082012"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-47"></span><span id="mapRows"><span class="annot"><span class="annottext">mapRows :: ([a] -&gt; [b]) -&gt; Grid a -&gt; Grid b
+</span><a href="Sudoku.Types.html#mapRows"><span class="hs-identifier hs-var hs-var">mapRows</span></a></span></span><span> </span><span id="local-6989586621679082011"><span class="annot"><span class="annottext">[a] -&gt; [b]
+</span><a href="#local-6989586621679082011"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679082010"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679082010"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[b]] -&gt; Grid b
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">([a] -&gt; [b]) -&gt; [[a]] -&gt; [[b]]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [b]
+</span><a href="#local-6989586621679082011"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679082010"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- | transpose a grid using 'transpose' from &quot;Data.List&quot;</span><span>
+</span><span id="line-50"></span><span id="local-6989586621679082009"><span class="annot"><a href="Sudoku.Types.html#transposeGrid"><span class="hs-identifier hs-type">transposeGrid</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082009"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082009"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-51"></span><span id="transposeGrid"><span class="annot"><span class="annottext">transposeGrid :: Grid a -&gt; Grid a
+</span><a href="Sudoku.Types.html#transposeGrid"><span class="hs-identifier hs-var hs-var">transposeGrid</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679082008"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679082008"><span class="hs-identifier hs-var">grid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; Grid a
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="annot"><span class="annottext">([[a]] -&gt; Grid a) -&gt; [[a]] -&gt; Grid a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; [[a]]
+forall a. [[a]] -&gt; [[a]]
+</span><span class="hs-identifier hs-var">transpose</span></span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679082008"><span class="hs-identifier hs-var">grid</span></a></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-comment">-- | The Functor instance for Grid lets us map over a 2D grid in the natural way.</span><span>
+</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679082004"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>  </span><span id="local-6989586621679082002"><span class="annot"><span class="annottext">fmap :: (a -&gt; b) -&gt; Grid a -&gt; Grid b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fmap</span></span></span><span> </span><span id="local-6989586621679082001"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082001"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679082000"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679082000"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[b]] -&gt; Grid b
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="annot"><span class="annottext">([[b]] -&gt; Grid b) -&gt; [[b]] -&gt; Grid b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">([a] -&gt; [b]) -&gt; [[a]] -&gt; [[b]]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679082001"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679082000"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="hs-comment">-- | Sudoku is a 2D 9x9 list representing the contents of a partially- or</span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- totally-filled sudoku grid. A blank space is represented by a 0.</span><span>
+</span><span id="line-59"></span><span class="hs-keyword">type</span><span> </span><span id="Sudoku"><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-var">Sudoku</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-comment">-- | Pos is an (Int, Int) tuple representing the position of a cell in a sudoku grid.</span><span>
+</span><span id="line-62"></span><span class="hs-keyword">type</span><span> </span><span id="Pos"><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-var">Pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- | get the cell value at a position in a grid.</span><span>
+</span><span id="line-65"></span><span id="local-6989586621679082059"><span class="annot"><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator hs-type">(!!!)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679082059"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679082059"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-66"></span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679081999"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679081999"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span id="%21%21%21"><span class="annot"><span class="annottext">!!! :: Grid a -&gt; Pos -&gt; a
+</span><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator hs-var hs-var">!!!</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081998"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081998"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081997"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081997"><span class="hs-identifier hs-var">j</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679081999"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; Int -&gt; [a]
+forall a. [a] -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081998"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int -&gt; a
+forall a. [a] -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081997"><span class="hs-identifier hs-var">j</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">9</span><span> </span><span class="annot"><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator hs-type">!!!</span></a></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-comment">-- | a blank sudoku grid</span><span>
+</span><span id="line-71"></span><span class="annot"><a href="Sudoku.Types.html#blank"><span class="hs-identifier hs-type">blank</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span>
+</span><span id="line-72"></span><span id="blank"><span class="annot"><span class="annottext">blank :: Sudoku
+</span><a href="Sudoku.Types.html#blank"><span class="hs-identifier hs-var hs-var">blank</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Int]] -&gt; Sudoku
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="annot"><span class="annottext">([[Int]] -&gt; Sudoku) -&gt; [[Int]] -&gt; Sudoku
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; [[Int]]
+forall a. Int -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">replicate</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; [[Int]]) -&gt; [Int] -&gt; [[Int]]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; [Int]
+forall a. Int -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">replicate</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">9</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- | get a row of the grid</span><span>
+</span><span id="line-75"></span><span class="annot"><a href="Sudoku.Types.html#getRow"><span class="hs-identifier hs-type">getRow</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
+</span><span id="line-76"></span><span id="getRow"><span class="annot"><span class="annottext">getRow :: Sudoku -&gt; Int -&gt; [Int]
+</span><a href="Sudoku.Types.html#getRow"><span class="hs-identifier hs-var hs-var">getRow</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679081994"><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679081994"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Int]] -&gt; Int -&gt; [Int]
+forall a. [a] -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">(!!)</span></span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679081994"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-comment">-- | get a column of the grid</span><span>
+</span><span id="line-79"></span><span class="annot"><a href="Sudoku.Types.html#getCol"><span class="hs-identifier hs-type">getCol</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
+</span><span id="line-80"></span><span id="getCol"><span class="annot"><span class="annottext">getCol :: Sudoku -&gt; Int -&gt; [Int]
+</span><a href="Sudoku.Types.html#getCol"><span class="hs-identifier hs-var hs-var">getCol</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679081993"><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679081993"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679081992"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081992"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679081991"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int -&gt; Int
+forall a. [a] -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081992"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679081991"><span class="annot"><span class="annottext">[Int]
+</span><a href="#local-6989586621679081991"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="#local-6989586621679081993"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-81"></span><span>
+</span><span id="line-82"></span><span class="hs-comment">-- | get the coordinates of a box (ordered right to left, top to bottom) as a Grid</span><span>
+</span><span id="line-83"></span><span class="annot"><a href="Sudoku.Types.html#getBoxCoords"><span class="hs-identifier hs-type">getBoxCoords</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span>
+</span><span id="line-84"></span><span id="getBoxCoords"><span class="annot"><span class="annottext">getBoxCoords :: Int -&gt; Grid Pos
+</span><a href="Sudoku.Types.html#getBoxCoords"><span class="hs-identifier hs-var hs-var">getBoxCoords</span></a></span></span><span> </span><span id="local-6989586621679081990"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081990"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-85"></span><span>  </span><span class="hs-keyword">let</span><span>
+</span><span id="line-86"></span><span>    </span><span id="local-6989586621679081989"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679081989"><span class="hs-identifier hs-var hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081990"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-87"></span><span>    </span><span id="local-6989586621679081987"><span class="annot"><span class="annottext">j :: Int
+</span><a href="#local-6989586621679081987"><span class="hs-identifier hs-var hs-var">j</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081990"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-88"></span><span>    </span><span id="local-6989586621679081985"><span class="annot"><span class="annottext">i1 :: Int
+</span><a href="#local-6989586621679081985"><span class="hs-identifier hs-var hs-var">i1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081989"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679081983"><span class="annot"><span class="annottext">i2 :: Int
+</span><a href="#local-6989586621679081983"><span class="hs-identifier hs-var hs-var">i2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081985"><span class="hs-identifier hs-var">i1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span>
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679081981"><span class="annot"><span class="annottext">j1 :: Int
+</span><a href="#local-6989586621679081981"><span class="hs-identifier hs-var hs-var">j1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081987"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-91"></span><span>    </span><span id="local-6989586621679081980"><span class="annot"><span class="annottext">j2 :: Int
+</span><a href="#local-6989586621679081980"><span class="hs-identifier hs-var hs-var">j2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081981"><span class="hs-identifier hs-var">j1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span>
+</span><span id="line-92"></span><span>  </span><span class="hs-keyword">in</span><span>
+</span><span id="line-93"></span><span>    </span><span class="annot"><span class="annottext">[[Pos]] -&gt; Grid Pos
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081979"><span class="hs-identifier hs-var">row</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081978"><span class="hs-identifier hs-var">col</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679081978"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081978"><span class="hs-identifier hs-var">col</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081981"><span class="hs-identifier hs-var">j1</span></a></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081980"><span class="hs-identifier hs-var">j2</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679081979"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081979"><span class="hs-identifier hs-var">row</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081985"><span class="hs-identifier hs-var">i1</span></a></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081983"><span class="hs-identifier hs-var">i2</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-comment">-- | get the coordinates of a box (ordered right to left, top to bottom) as a Grid</span><span>
+</span><span id="line-96"></span><span class="annot"><a href="Sudoku.Types.html#getBoxCoordsFlat"><span class="hs-identifier hs-type">getBoxCoordsFlat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-97"></span><span id="getBoxCoordsFlat"><span class="annot"><span class="annottext">getBoxCoordsFlat :: Int -&gt; [Pos]
+</span><a href="Sudoku.Types.html#getBoxCoordsFlat"><span class="hs-identifier hs-var hs-var">getBoxCoordsFlat</span></a></span></span><span> </span><span id="local-6989586621679081977"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081977"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679081976"><span class="annot"><span class="annottext">[[Pos]]
+</span><a href="#local-6989586621679081976"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Grid Pos
+</span><a href="Sudoku.Types.html#getBoxCoords"><span class="hs-identifier hs-var">getBoxCoords</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081977"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">[[Pos]] -&gt; [Pos]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">[[Pos]]
+</span><a href="#local-6989586621679081976"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span class="hs-comment">-- | get a box of the grid as a Grid</span><span>
+</span><span id="line-100"></span><span id="local-6989586621679081974"><span class="annot"><a href="Sudoku.Types.html#getBox"><span class="hs-identifier hs-type">getBox</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081974"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081974"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-101"></span><span id="getBox"><span class="annot"><span class="annottext">getBox :: Grid a -&gt; Int -&gt; Grid a
+</span><a href="Sudoku.Types.html#getBox"><span class="hs-identifier hs-var hs-var">getBox</span></a></span></span><span> </span><span id="local-6989586621679081973"><span class="annot"><span class="annottext">Grid a
+</span><a href="#local-6989586621679081973"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Pos -&gt; a) -&gt; Grid Pos -&gt; Grid a
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Grid a
+</span><a href="#local-6989586621679081973"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Grid a -&gt; Pos -&gt; a
+forall a. Grid a -&gt; Pos -&gt; a
+</span><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator hs-var">!!!</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Grid Pos -&gt; Grid a) -&gt; (Int -&gt; Grid Pos) -&gt; Int -&gt; Grid a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Grid Pos
+</span><a href="Sudoku.Types.html#getBoxCoords"><span class="hs-identifier hs-var">getBoxCoords</span></a></span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span class="hs-comment">-- | get a box of the grid as a list</span><span>
+</span><span id="line-104"></span><span id="local-6989586621679081971"><span class="annot"><a href="Sudoku.Types.html#getBoxFlat"><span class="hs-identifier hs-type">getBoxFlat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081971"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679081971"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-105"></span><span id="getBoxFlat"><span class="annot"><span class="annottext">getBoxFlat :: Grid a -&gt; Int -&gt; [a]
+</span><a href="Sudoku.Types.html#getBoxFlat"><span class="hs-identifier hs-var hs-var">getBoxFlat</span></a></span></span><span> </span><span id="local-6989586621679081970"><span class="annot"><span class="annottext">Grid a
+</span><a href="#local-6989586621679081970"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679081969"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081969"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Pos -&gt; a) -&gt; [Pos] -&gt; [a]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Grid a
+</span><a href="#local-6989586621679081970"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Grid a -&gt; Pos -&gt; a
+forall a. Grid a -&gt; Pos -&gt; a
+</span><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator hs-var">!!!</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Pos] -&gt; [a]) -&gt; [Pos] -&gt; [a]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Pos]
+</span><a href="Sudoku.Types.html#getBoxCoordsFlat"><span class="hs-identifier hs-var">getBoxCoordsFlat</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081969"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="hs-comment">-- | get the index of the box a cell belongs to</span><span>
+</span><span id="line-108"></span><span class="annot"><a href="Sudoku.Types.html#getBoxFromCoord"><span class="hs-identifier hs-type">getBoxFromCoord</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-109"></span><span id="getBoxFromCoord"><span class="annot"><span class="annottext">getBoxFromCoord :: Pos -&gt; Int
+</span><a href="Sudoku.Types.html#getBoxFromCoord"><span class="hs-identifier hs-var hs-var">getBoxFromCoord</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081968"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081968"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081967"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081967"><span class="hs-identifier hs-var">j</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">div</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081968"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">div</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081967"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span class="hs-comment">-- | all cell positions as a 2D Grid</span><span>
+</span><span id="line-112"></span><span class="annot"><a href="Sudoku.Types.html#allSquares"><span class="hs-identifier hs-type">allSquares</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span>
+</span><span id="line-113"></span><span id="allSquares"><span class="annot"><span class="annottext">allSquares :: Grid Pos
+</span><a href="Sudoku.Types.html#allSquares"><span class="hs-identifier hs-var hs-var">allSquares</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Pos]] -&gt; Grid Pos
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081966"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081965"><span class="hs-identifier hs-var">j</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679081965"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081965"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679081966"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081966"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="hs-comment">-- | all cell positions as a list</span><span>
+</span><span id="line-116"></span><span class="annot"><a href="Sudoku.Types.html#allSquaresFlat"><span class="hs-identifier hs-type">allSquaresFlat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-117"></span><span id="allSquaresFlat"><span class="annot"><span class="annottext">allSquaresFlat :: [Pos]
+</span><a href="Sudoku.Types.html#allSquaresFlat"><span class="hs-identifier hs-var hs-var">allSquaresFlat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081964"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081963"><span class="hs-identifier hs-var">j</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679081964"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081964"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081963"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081963"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="hs-comment">-- | set an entry of a 2D grid</span><span>
+</span><span id="line-120"></span><span id="local-6989586621679081962"><span class="annot"><a href="Sudoku.Types.html#place"><span class="hs-identifier hs-type">place</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081962"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679081962"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081962"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-121"></span><span id="place"><span class="annot"><span class="annottext">place :: Grid a -&gt; Pos -&gt; a -&gt; Grid a
+</span><a href="Sudoku.Types.html#place"><span class="hs-identifier hs-var hs-var">place</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span id="local-6989586621679081961"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679081961"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081960"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081960"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081959"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081959"><span class="hs-identifier hs-var">j</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679081958"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081958"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-122"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679081957"><span class="annot"><span class="annottext">ith :: [a]
+</span><a href="#local-6989586621679081957"><span class="hs-identifier hs-var hs-var">ith</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679081961"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; Int -&gt; [a]
+forall a. [a] -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081960"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-123"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; Grid a
+forall a. [[a]] -&gt; Grid a
+</span><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-var">Grid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [[a]] -&gt; [[a]]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081960"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679081961"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; [[a]] -&gt; [[a]]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081959"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081957"><span class="hs-identifier hs-var">ith</span></a></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a] -&gt; [a]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081958"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; [a] -&gt; [a]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">drop</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081959"><span class="hs-identifier hs-var">j</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679081957"><span class="hs-identifier hs-var">ith</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[[a]] -&gt; [[a]] -&gt; [[a]]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [[a]] -&gt; [[a]]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">drop</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081960"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679081961"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-124"></span><span>
+</span><span id="line-125"></span><span class="hs-comment">-- | check if two positions are &quot;similar&quot;, i.e. in the same row/box/col but NOT the same</span><span>
+</span><span id="line-126"></span><span class="annot"><a href="Sudoku.Types.html#similar"><span class="hs-identifier hs-type">similar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-127"></span><span id="similar"><span class="annot"><span class="annottext">similar :: Pos -&gt; Pos -&gt; Bool
+</span><a href="Sudoku.Types.html#similar"><span class="hs-identifier hs-var hs-var">similar</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081954"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081954"><span class="hs-identifier hs-var">i1</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081953"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081953"><span class="hs-identifier hs-var">j1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679081952"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081952"><span class="hs-identifier hs-var">i2</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679081951"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081951"><span class="hs-identifier hs-var">j2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081954"><span class="hs-identifier hs-var">i1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081953"><span class="hs-identifier hs-var">j1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Pos -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081952"><span class="hs-identifier hs-var">i2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081951"><span class="hs-identifier hs-var">j2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-128"></span><span>                                </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081954"><span class="hs-identifier hs-var">i1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081952"><span class="hs-identifier hs-var">i2</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span>
+</span><span id="line-129"></span><span>                                </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081953"><span class="hs-identifier hs-var">j1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081951"><span class="hs-identifier hs-var">j2</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span>
+</span><span id="line-130"></span><span>                                </span><span class="annot"><span class="annottext">Pos -&gt; Int
+</span><a href="Sudoku.Types.html#getBoxFromCoord"><span class="hs-identifier hs-var">getBoxFromCoord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081954"><span class="hs-identifier hs-var">i1</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081953"><span class="hs-identifier hs-var">j1</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Int
+</span><a href="Sudoku.Types.html#getBoxFromCoord"><span class="hs-identifier hs-var">getBoxFromCoord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081952"><span class="hs-identifier hs-var">i2</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679081951"><span class="hs-identifier hs-var">j2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-131"></span><span>                                </span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span>
+</span><span id="line-133"></span><span class="hs-comment">-- | given a grid and a list representing a map, replace all values of the grid</span><span>
+</span><span id="line-134"></span><span class="hs-comment">-- according to the map</span><span>
+</span><span id="line-135"></span><span id="local-6989586621679081947"><span class="annot"><a href="Sudoku.Types.html#replaceValues"><span class="hs-identifier hs-type">replaceValues</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679081947"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679081947"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679081947"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679081947"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081947"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Grid"><span class="hs-identifier hs-type">Grid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679081947"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-136"></span><span id="replaceValues"><span class="annot"><span class="annottext">replaceValues :: [(a, a)] -&gt; Grid a -&gt; Grid a
+</span><a href="Sudoku.Types.html#replaceValues"><span class="hs-identifier hs-var hs-var">replaceValues</span></a></span></span><span> </span><span id="local-6989586621679081946"><span class="annot"><span class="annottext">[(a, a)]
+</span><a href="#local-6989586621679081946"><span class="hs-identifier hs-var">replacements</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; a) -&gt; Grid a -&gt; Grid a
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a
+</span><a href="#local-6989586621679081945"><span class="hs-identifier hs-var">helper</span></a></span><span>
+</span><span id="line-137"></span><span>  </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679081945"><span class="annot"><span class="annottext">helper :: a -&gt; a
+</span><a href="#local-6989586621679081945"><span class="hs-identifier hs-var hs-var">helper</span></a></span></span><span> </span><span id="local-6989586621679081944"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081944"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a -&gt; a
+forall a. a -&gt; Maybe a -&gt; a
+</span><span class="hs-identifier hs-var">fromMaybe</span></span><span> </span><span class="annot"><span class="annottext">a
+forall a. a
+</span><a href="#local-6989586621679081943"><span class="hs-identifier hs-var">errMsg</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679081942"><span class="hs-identifier hs-var">maybeResult</span></a></span><span>
+</span><span id="line-138"></span><span>          </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679081943"><span class="annot"><span class="annottext">errMsg :: a
+</span><a href="#local-6989586621679081943"><span class="hs-identifier hs-var hs-var">errMsg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; a
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;bad lookup: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081944"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; (replacements: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[(a, a)] -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">[(a, a)]
+</span><a href="#local-6989586621679081946"><span class="hs-identifier hs-var">replacements</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;)&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>                </span><span id="local-6989586621679081942"><span class="annot"><span class="annottext">maybeResult :: Maybe a
+</span><a href="#local-6989586621679081942"><span class="hs-identifier hs-var hs-var">maybeResult</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; [(a, a)] -&gt; Maybe a
+forall a b. Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
+</span><span class="hs-identifier hs-var">lookup</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679081944"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[(a, a)]
+</span><a href="#local-6989586621679081946"><span class="hs-identifier hs-var">replacements</span></a></span><span>
+</span><span id="line-140"></span></pre></body></html>

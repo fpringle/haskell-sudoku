@@ -15,13 +15,13 @@ module Sudoku.Generate (
   , generateSolvedFromGen
   ) where
 
-import Data.List
-import Data.Maybe (fromMaybe)
-import System.Random
+import           Data.List
+import           Data.Maybe                (fromMaybe)
+import           System.Random
 
-import Sudoku.Types
-import Sudoku.Util
-import Sudoku.Solve.Backtracking
+import           Sudoku.Solve.Backtracking
+import           Sudoku.Types
+import           Sudoku.Util
 
 
 -- | Given a Sudoku grid with only one number, generate a solved grid.

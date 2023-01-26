@@ -36,7 +36,7 @@ JSON body:
 @
 
 Returns:
-    
+
 @
 {
   board: [[...]]    # a 9x9 array containing the solved Sudoku grid.
@@ -53,15 +53,17 @@ module Sudoku.Server
   , server
   ) where
 
-import Sudoku.Server.Get
-import Sudoku.Server.Post
-import Sudoku.Server.Util
+import           Sudoku.Server.Get
+import           Sudoku.Server.Post
+import           Sudoku.Server.Util
 
+import qualified Data.ByteString.Char8      as B
 import qualified Data.ByteString.Lazy.Char8 as BL
-import qualified Data.ByteString.Char8 as B
 
-import Network.HTTP.Types.Status (methodNotAllowed405)
-import Network.Wai (Application, responseLBS, requestMethod, Response, ResponseReceived)
+import           Network.HTTP.Types.Status  (methodNotAllowed405)
+import           Network.Wai                (Application, Response,
+                                             ResponseReceived, requestMethod,
+                                             responseLBS)
 
 
 handleUnknownMethod :: B.ByteString -> (Response -> IO ResponseReceived) -> IO ResponseReceived

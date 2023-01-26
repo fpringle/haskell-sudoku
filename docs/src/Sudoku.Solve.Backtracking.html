@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">{-
+Copyright (c) 2022, Frederick Pringle
+All rights reserved.
+
+This source code is licensed under the BSD-style license found in the
+LICENSE file in the root directory of this source tree.
+-}</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- | More advanced solution concepts using backtracking techniques.</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Sudoku.Solve.Backtracking</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#backtrack"><span class="hs-identifier">backtrack</span></a></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#backtrackList"><span class="hs-identifier">backtrackList</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#nextPos"><span class="hs-identifier">nextPos</span></a></span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#nextBlank"><span class="hs-identifier">nextBlank</span></a></span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Solve.Basic.html"><span class="hs-identifier">Sudoku.Solve.Basic</span></a></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Types.html"><span class="hs-identifier">Sudoku.Types</span></a></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Util.html"><span class="hs-identifier">Sudoku.Util</span></a></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Sudoku.Validity.html"><span class="hs-identifier">Sudoku.Validity</span></a></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-comment">{- | Get the next position in a grid (row-column order), if there is one.
+
+@
+   nextPos (0, 4) == Just (0, 5)
+   nextPos (2, 8) == Just (3, 0)
+   nextPos (8, 8) == Nothing
+@
+-}</span><span>
+</span><span id="line-30"></span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#nextPos"><span class="hs-identifier hs-type">nextPos</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span>
+</span><span id="line-31"></span><span id="nextPos"><span class="annot"><span class="annottext">nextPos :: Pos -&gt; Maybe Pos
+</span><a href="Sudoku.Solve.Backtracking.html#nextPos"><span class="hs-identifier hs-var hs-var">nextPos</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679082579"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082579"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679082578"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082578"><span class="hs-identifier hs-var">j</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082579"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082578"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Pos
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082578"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">8</span></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Maybe Pos
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082579"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Maybe Pos
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082579"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082578"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- | Get the next /empty/ position in a grid, if there is one.</span><span>
+</span><span id="line-37"></span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#nextBlank"><span class="hs-identifier hs-type">nextBlank</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span>
+</span><span id="line-38"></span><span id="nextBlank"><span class="annot"><span class="annottext">nextBlank :: Sudoku -&gt; Pos -&gt; Maybe Pos
+</span><a href="Sudoku.Solve.Backtracking.html#nextBlank"><span class="hs-identifier hs-var hs-var">nextBlank</span></a></span></span><span> </span><span id="local-6989586621679082575"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082575"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679082574"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082574"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679082573"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082573"><span class="hs-identifier hs-var">np</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Maybe Pos
+</span><a href="Sudoku.Solve.Backtracking.html#nextPos"><span class="hs-identifier hs-var">nextPos</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082574"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082575"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Int
+forall a. Grid a -&gt; Pos -&gt; a
+</span><a href="Sudoku.Types.html#%21%21%21"><span class="hs-operator hs-var">!!!</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082573"><span class="hs-identifier hs-var">np</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Maybe Pos
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082573"><span class="hs-identifier hs-var">np</span></a></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Maybe Pos
+</span><a href="Sudoku.Solve.Backtracking.html#nextBlank"><span class="hs-identifier hs-var">nextBlank</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082575"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082573"><span class="hs-identifier hs-var">np</span></a></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#backtrack%27"><span class="hs-identifier hs-type">backtrack'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span>
+</span><span id="line-45"></span><span id="backtrack%27"><span class="annot"><span class="annottext">backtrack' :: Sudoku -&gt; Pos -&gt; Maybe Sudoku
+</span><a href="Sudoku.Solve.Backtracking.html#backtrack%27"><span class="hs-identifier hs-var hs-var">backtrack'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082570"><span class="hs-identifier hs-var">helper</span></a></span><span> </span><span class="annot"><span class="annottext">(Sudoku -&gt; Pos -&gt; Maybe Sudoku)
+-&gt; (Sudoku -&gt; Sudoku) -&gt; Sudoku -&gt; Pos -&gt; Maybe Sudoku
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Sudoku
+</span><a href="Sudoku.Solve.Basic.html#improve"><span class="hs-identifier hs-var">improve</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span id="local-6989586621679082570"><span class="annot"><span class="annottext">helper :: Sudoku -&gt; Pos -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082570"><span class="hs-identifier hs-var hs-var">helper</span></a></span></span><span> </span><span id="local-6989586621679082567"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082567"><span class="hs-identifier hs-var">state</span></a></span></span><span> </span><span id="local-6989586621679082566"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082566"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-48"></span><span>      </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; Bool -&gt; Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValid"><span class="hs-identifier hs-var">isValid</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082567"><span class="hs-identifier hs-var">state</span></a></span><span>
+</span><span id="line-49"></span><span>      </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Maybe Sudoku
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-50"></span><span>      </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Maybe Pos -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Pos -&gt; Maybe Sudoku) -&gt; Maybe Pos -&gt; Maybe Sudoku
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Maybe Pos
+</span><a href="Sudoku.Solve.Backtracking.html#nextBlank"><span class="hs-identifier hs-var">nextBlank</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082567"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082566"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-51"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>        </span><span class="annot"><a href="#local-6989586621679082563"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span>
+</span><span id="line-53"></span><span>        </span><span id="local-6989586621679082563"><span class="annot"><span class="annottext">go :: Maybe Pos -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082563"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe Pos
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Maybe Sudoku
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082567"><span class="hs-identifier hs-var">state</span></a></span><span>
+</span><span id="line-54"></span><span>        </span><span class="annot"><a href="#local-6989586621679082563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082562"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082562"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082561"><span class="hs-identifier hs-var">go2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-55"></span><span>          </span><span class="hs-keyword">where</span><span>
+</span><span id="line-56"></span><span>            </span><span class="annot"><a href="#local-6989586621679082561"><span class="hs-identifier hs-type">go2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span>
+</span><span id="line-57"></span><span>            </span><span id="local-6989586621679082561"><span class="annot"><span class="annottext">go2 :: Int -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082561"><span class="hs-identifier hs-var hs-var">go2</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Sudoku
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-58"></span><span>            </span><span class="annot"><a href="#local-6989586621679082561"><span class="hs-identifier hs-var">go2</span></a></span><span> </span><span id="local-6989586621679082560"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082560"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-59"></span><span>              </span><span class="hs-keyword">let</span><span>
+</span><span id="line-60"></span><span>                </span><span id="local-6989586621679082559"><span class="annot"><span class="annottext">new_state :: Sudoku
+</span><a href="#local-6989586621679082559"><span class="hs-identifier hs-var hs-var">new_state</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Int -&gt; Sudoku
+forall a. Grid a -&gt; Pos -&gt; a -&gt; Grid a
+</span><a href="Sudoku.Types.html#place"><span class="hs-identifier hs-var">place</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082567"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082562"><span class="hs-identifier hs-var">next</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082560"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-61"></span><span>                </span><span id="local-6989586621679082557"><span class="annot"><span class="annottext">sub :: Maybe Sudoku
+</span><a href="#local-6989586621679082557"><span class="hs-identifier hs-var hs-var">sub</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Maybe Sudoku
+</span><a href="Sudoku.Solve.Backtracking.html#backtrack%27"><span class="hs-identifier hs-var">backtrack'</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082559"><span class="hs-identifier hs-var">new_state</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082562"><span class="hs-identifier hs-var">next</span></a></span><span>
+</span><span id="line-62"></span><span>              </span><span class="hs-keyword">in</span><span>
+</span><span id="line-63"></span><span>                </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe Sudoku
+</span><a href="#local-6989586621679082557"><span class="hs-identifier hs-var">sub</span></a></span><span> </span><span class="hs-keyword">of</span><span> </span><span class="annot"><span class="annottext">Maybe Sudoku
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Sudoku
+</span><a href="#local-6989586621679082561"><span class="hs-identifier hs-var">go2</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082560"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span>                            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082556"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082556"><span class="hs-identifier hs-var">sol</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Maybe Sudoku
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082556"><span class="hs-identifier hs-var">sol</span></a></span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="hs-comment">-- | Use backtracking to try to find one solution of a suokdu grid.</span><span>
+</span><span id="line-67"></span><span class="hs-comment">-- Returns Nothing if there is no solution.</span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#backtrack"><span class="hs-identifier hs-type">backtrack</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span>
+</span><span id="line-69"></span><span id="backtrack"><span class="annot"><span class="annottext">backtrack :: Sudoku -&gt; Maybe Sudoku
+</span><a href="Sudoku.Solve.Backtracking.html#backtrack"><span class="hs-identifier hs-var hs-var">backtrack</span></a></span></span><span> </span><span id="local-6989586621679082555"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082555"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Maybe Sudoku
+</span><a href="Sudoku.Solve.Backtracking.html#backtrack%27"><span class="hs-identifier hs-var">backtrack'</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082555"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#backtrackList%27"><span class="hs-identifier hs-type">backtrackList'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-72"></span><span id="backtrackList%27"><span class="annot"><span class="annottext">backtrackList' :: Sudoku -&gt; Pos -&gt; [Sudoku]
+</span><a href="Sudoku.Solve.Backtracking.html#backtrackList%27"><span class="hs-identifier hs-var hs-var">backtrackList'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; [Sudoku]
+</span><a href="#local-6989586621679082553"><span class="hs-identifier hs-var">helper</span></a></span><span> </span><span class="annot"><span class="annottext">(Sudoku -&gt; Pos -&gt; [Sudoku])
+-&gt; (Sudoku -&gt; Sudoku) -&gt; Sudoku -&gt; Pos -&gt; [Sudoku]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Sudoku
+</span><a href="Sudoku.Solve.Basic.html#improve"><span class="hs-identifier hs-var">improve</span></a></span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679082553"><span class="annot"><span class="annottext">helper :: Sudoku -&gt; Pos -&gt; [Sudoku]
+</span><a href="#local-6989586621679082553"><span class="hs-identifier hs-var hs-var">helper</span></a></span></span><span> </span><span id="local-6989586621679082552"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082552"><span class="hs-identifier hs-var">state</span></a></span></span><span> </span><span id="local-6989586621679082551"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082551"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-75"></span><span>      </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; Bool -&gt; Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Bool
+</span><a href="Sudoku.Validity.html#isValid"><span class="hs-identifier hs-var">isValid</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082552"><span class="hs-identifier hs-var">state</span></a></span><span>
+</span><span id="line-76"></span><span>      </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-77"></span><span>      </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Maybe Pos -&gt; [Sudoku]
+</span><a href="#local-6989586621679082550"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Pos -&gt; [Sudoku]) -&gt; Maybe Pos -&gt; [Sudoku]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Maybe Pos
+</span><a href="Sudoku.Solve.Backtracking.html#nextBlank"><span class="hs-identifier hs-var">nextBlank</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082552"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082551"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-78"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>        </span><span class="annot"><a href="#local-6989586621679082550"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="Sudoku.Types.html#Pos"><span class="hs-identifier hs-type">Pos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-80"></span><span>        </span><span id="local-6989586621679082550"><span class="annot"><span class="annottext">go :: Maybe Pos -&gt; [Sudoku]
+</span><a href="#local-6989586621679082550"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe Pos
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082552"><span class="hs-identifier hs-var">state</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-81"></span><span>        </span><span class="annot"><a href="#local-6989586621679082550"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679082549"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082549"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Sudoku]
+</span><a href="#local-6989586621679082548"><span class="hs-identifier hs-var">go2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-82"></span><span>          </span><span class="hs-keyword">where</span><span>
+</span><span id="line-83"></span><span>            </span><span class="annot"><a href="#local-6989586621679082548"><span class="hs-identifier hs-type">go2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-84"></span><span>            </span><span id="local-6989586621679082548"><span class="annot"><span class="annottext">go2 :: Int -&gt; [Sudoku]
+</span><a href="#local-6989586621679082548"><span class="hs-identifier hs-var hs-var">go2</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-85"></span><span>            </span><span class="annot"><a href="#local-6989586621679082548"><span class="hs-identifier hs-var">go2</span></a></span><span> </span><span id="local-6989586621679082547"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082547"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-86"></span><span>              </span><span class="hs-keyword">let</span><span>
+</span><span id="line-87"></span><span>                </span><span id="local-6989586621679082546"><span class="annot"><span class="annottext">new_state :: Sudoku
+</span><a href="#local-6989586621679082546"><span class="hs-identifier hs-var hs-var">new_state</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; Int -&gt; Sudoku
+forall a. Grid a -&gt; Pos -&gt; a -&gt; Grid a
+</span><a href="Sudoku.Types.html#place"><span class="hs-identifier hs-var">place</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082552"><span class="hs-identifier hs-var">state</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082549"><span class="hs-identifier hs-var">next</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082547"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-88"></span><span>                </span><span id="local-6989586621679082545"><span class="annot"><span class="annottext">sub :: [Sudoku]
+</span><a href="#local-6989586621679082545"><span class="hs-identifier hs-var hs-var">sub</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; [Sudoku]
+</span><a href="Sudoku.Solve.Backtracking.html#backtrackList%27"><span class="hs-identifier hs-var">backtrackList'</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082546"><span class="hs-identifier hs-var">new_state</span></a></span><span> </span><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621679082549"><span class="hs-identifier hs-var">next</span></a></span><span>
+</span><span id="line-89"></span><span>              </span><span class="hs-keyword">in</span><span>
+</span><span id="line-90"></span><span>                </span><span class="annot"><span class="annottext">[Sudoku]
+</span><a href="#local-6989586621679082545"><span class="hs-identifier hs-var">sub</span></a></span><span> </span><span class="annot"><span class="annottext">[Sudoku] -&gt; [Sudoku] -&gt; [Sudoku]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Sudoku]
+</span><a href="#local-6989586621679082548"><span class="hs-identifier hs-var">go2</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679082547"><span class="hs-identifier hs-var">n</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="hs-comment">-- | Use backtracking to try to find all solutions of a suokdu grid.</span><span>
+</span><span id="line-93"></span><span class="hs-comment">-- Returns Nothing if there is no solution.</span><span>
+</span><span id="line-94"></span><span class="annot"><a href="Sudoku.Solve.Backtracking.html#backtrackList"><span class="hs-identifier hs-type">backtrackList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Sudoku.Types.html#Sudoku"><span class="hs-identifier hs-type">Sudoku</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-95"></span><span id="backtrackList"><span class="annot"><span class="annottext">backtrackList :: Sudoku -&gt; [Sudoku]
+</span><a href="Sudoku.Solve.Backtracking.html#backtrackList"><span class="hs-identifier hs-var hs-var">backtrackList</span></a></span></span><span> </span><span id="local-6989586621679082544"><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082544"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Sudoku -&gt; Pos -&gt; [Sudoku]
+</span><a href="Sudoku.Solve.Backtracking.html#backtrackList%27"><span class="hs-identifier hs-var">backtrackList'</span></a></span><span> </span><span class="annot"><span class="annottext">Sudoku
+</span><a href="#local-6989586621679082544"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span></pre></body></html>

@@ -8,16 +8,16 @@ LICENSE file in the root directory of this source tree.
 
 module Sudoku.Tests.Generate where
 
-import System.Random
+import           System.Random
 
-import Test.QuickCheck
-import Test.QuickCheck.Monadic
-import Test.QuickCheck.Instances.Tuple
+import           Test.QuickCheck
+import           Test.QuickCheck.Instances.Tuple
+import           Test.QuickCheck.Monadic
 
-import Sudoku.Types
-import Sudoku.Generate
-import Sudoku.Validity
-import Sudoku.Tests.TestUtils
+import           Sudoku.Generate
+import           Sudoku.Tests.TestUtils
+import           Sudoku.Types
+import           Sudoku.Validity
 
 propGenSolvedIsSolved :: Pos -> Int -> Bool
 propGenSolvedIsSolved pos val = isValid $ generateSolvedFromFirst pos val

@@ -16,13 +16,13 @@ module Sudoku.Server.Util (
   , fromJSON
   ) where
 
-import Data.Aeson
-import qualified Data.ByteString.Lazy as BL
-import qualified Data.ByteString.Char8 as B
-import Network.Wai
-import Network.HTTP.Types.Status (notFound404)
+import           Data.Aeson
+import qualified Data.ByteString.Char8     as B
+import qualified Data.ByteString.Lazy      as BL
+import           Network.HTTP.Types.Status (notFound404)
+import           Network.Wai
 
-import Sudoku.Types
+import           Sudoku.Types
 
 
 instance ToJSON a => ToJSON (Grid a) where
@@ -30,7 +30,7 @@ instance ToJSON a => ToJSON (Grid a) where
 
 instance FromJSON a => FromJSON (Grid a) where
   parseJSON (Object v) = Grid <$> v .: "board"
-  parseJSON other = error ("invalid grid JSON: " ++ show other)
+  parseJSON other      = error ("invalid grid JSON: " ++ show other)
 
 -- | Handle an invalid path
 handleBadPath :: B.ByteString -> (Response -> IO ResponseReceived) -> IO ResponseReceived
