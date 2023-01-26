@@ -61,17 +61,11 @@ test-suite sudoku-testsuite
                        , Sudoku.Tests.Util
                        , Sudoku.Tests.Solve.Backtracking
                        , Sudoku.Tests.Solve.Basic
-                       , Sudoku.Types
-                       , Sudoku.Generate
-                       , Sudoku.Solve.Backtracking
-                       , Sudoku.Solve.Basic
-                       , Sudoku.Util
-                       , Sudoku.Validity
   build-depends:       base >=4.12
                        , QuickCheck
                        , checkers
                        , random
                        , strict
                        , sudoku
-  hs-source-dirs:      src testsuite
+  hs-source-dirs:      testsuite
   default-language:    Haskell2010
